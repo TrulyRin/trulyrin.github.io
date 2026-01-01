@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         /* Forces the body to fill the screen so centering works */
-        body, html { height: 100%; margin: 0; overflow: hidden; }
+        body, html { height: 100%; margin: 0; }
         
         .status-icon { font-size: 3.5rem; margin-bottom: 20px; }
         .success { color: var(--primary); text-shadow: 0 0 25px var(--primary-glow); }
@@ -25,12 +25,25 @@
     </style>
 </head>
 <body>
-    <nav class="navbar" style="position: absolute; top: 0; width: 100%;">
-        <div class="nav-container" style="justify-content: center;">
-            <a href="https://deepsaviors.xyz" class="logo-group">
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo-group">
                 <img src="https://cdn.discordapp.com/icons/1305511241577529354/a_3468496798f28b28a3d3fd68ceb62885.gif?size=1024" class="logo-img">
                 <span class="logo-text">Depths Saviors</span>
             </a>
+            <button class="hamburger" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </button>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/bot" class="nav-link">Setup Guide</a>
+                <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank">
+                    <i class="fab fa-discord"></i> Server
+                </a>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -55,5 +68,29 @@
     <footer style="position: absolute; bottom: 0; width: 100%; border: none; padding: 20px;">
         <p style="opacity: 0.5;">© 2025 Depths Saviors.</p>
     </footer>
+
+    <script>
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            updateIcon(savedTheme);
+        }
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
+        }
+        function updateIcon(theme) {
+            const icon = document.querySelector('.theme-toggle i');
+            if (icon) icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        function toggleMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+        document.addEventListener('DOMContentLoaded', initTheme);
+    </script>
 </body>
 </html>
