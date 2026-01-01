@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Official home of Depths Saviors, a Discord utility bot for Deepwoken alliance management and rescue alerts.">
+    <meta name="description" content="Official home of Depths Saviors, the premier Deepwoken rescue service and alliance utility bot.">
     <title>Depths Saviors | Deepwoken Utility</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,13 +16,22 @@
                 <img src="https://cdn.discordapp.com/icons/1305511241577529354/a_3468496798f28b28a3d3fd68ceb62885.gif?size=1024" class="logo-img">
                 <span class="logo-text">Depths Saviors</span>
             </a>
+            
+            <button class="hamburger" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
             <div class="nav-links">
                 <a href="/" class="nav-link active">Home</a>
                 <a href="/bot" class="nav-link">Setup Guide</a>
                 <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank">
                     <i class="fab fa-discord"></i> Server
                 </a>
-                <button class="theme-toggle" onclick="toggleTheme()"><i class="fas fa-moon"></i></button>
+                <button class="theme-toggle" onclick="toggleTheme()">
+                    <i class="fas fa-moon"></i>
+                </button>
             </div>
         </div>
     </nav>
@@ -35,7 +44,7 @@
             The premier Deepwoken rescue service. Instant multi-guild gank alerts, screenshot verification, and real-time alliance coordination.
         </p>
         
-        <div style="display: flex; gap: 15px; justify-content: center;">
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
             <a href="https://discord.com/oauth2/authorize?client_id=1373795045529878560" target="_blank" 
                style="background: var(--primary); color: white; padding: 14px 35px; border-radius: 30px; text-decoration: none; font-weight: 700; box-shadow: 0 0 20px var(--primary-glow); transition: 0.3s;">
                Invite Bot
@@ -62,7 +71,7 @@
         <div class="glass-panel" style="margin: 0; transition: transform 0.3s;">
             <i class="fas fa-chart-line" style="font-size: 2rem; color: #a855f7; margin-bottom: 20px;"></i>
             <h3 style="margin-bottom: 10px;">Combat Statistics</h3>
-            <p style="color: var(--text-muted);">Track response times, attendance, and top callers with <code>/gankstats</code> to stay on date.</p>
+            <p style="color: var(--text-muted);">Track response times, attendance, and top callers with <code>/gankstats</code> to stay up to date.</p>
         </div>
     </section>
 
@@ -75,20 +84,27 @@
     </footer>
 
     <script>
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            updateIcon(savedTheme);
+        }
         function toggleTheme() {
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
-            const icon = document.querySelector('.theme-toggle i');
-            if (currentTheme === 'light') {
-                body.setAttribute('data-theme', 'dark');
-                icon.className = 'fas fa-moon';
-            } else {
-                body.setAttribute('data-theme', 'light');
-                icon.className = 'fas fa-sun';
-            }
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcon(newTheme);
         }
+        function updateIcon(theme) {
+            const icon = document.querySelector('.theme-toggle i');
+            if (icon) icon.className = theme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        function toggleMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+        document.addEventListener('DOMContentLoaded', initTheme);
     </script>
 </body>
 </html>
-
-
