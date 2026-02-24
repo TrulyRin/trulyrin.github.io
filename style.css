@@ -13,7 +13,7 @@
   --text-muted: #94a3b8;
   --border-light: rgba(255, 255, 255, 0.08);
   --glass: blur(16px) saturate(180%);
-  --radius: 16px;
+  --radius: 24px;
   --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --nav-height: 80px;
 }
@@ -65,7 +65,13 @@ body {
 }
 
 .logo-group { display: flex; align-items: center; gap: 12px; text-decoration: none; z-index: 1002; }
-.logo-img { height: 42px; border-radius: 50%; border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+.logo-img { 
+  height: 48px; width: 48px; object-fit: cover; 
+  border-radius: 50%; border: 2px solid var(--primary); 
+  box-shadow: 0 0 15px var(--primary-glow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.logo-img:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 25px var(--primary); }
 .logo-text { font-weight: 800; font-size: 1.3rem; color: var(--text-main); letter-spacing: -0.5px; }
 
 /* Desktop Nav Links */
@@ -112,7 +118,12 @@ body {
 /* =========================================
    3. Main Content & Utilities
    ========================================= */
-.main-content { padding-top: 140px; padding-bottom: 60px; flex: 1; width: 90%; max-width: 1000px; margin: 0 auto; }
+.main-content { 
+  padding-top: 140px; padding-bottom: 60px; flex: 1; 
+  width: 90%; max-width: 1000px; margin: 0 auto;
+  animation: fadeIn 0.8s ease-out;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 /* Glass Cards */
 .glass-panel {
@@ -123,7 +134,9 @@ body {
   border-radius: var(--radius);
   padding: 30px; margin-bottom: 25px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+.glass-panel:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-color: rgba(255,255,255,0.15); }
 
 /* Command Styling */
 code.cmd { background: rgba(0,0,0,0.3); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-family: monospace; }
