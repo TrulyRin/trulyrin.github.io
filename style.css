@@ -2,16 +2,16 @@
    1. Theme Variables & Reset
    ========================================= */
 :root {
-  /* Default: Dark Mode (Abyssal) */
-  --bg-deep: #020617;
-  --bg-gradient: radial-gradient(circle at top center, #2e1065 0%, #020617 60%);
-  --bg-surface: rgba(15, 23, 42, 0.6);
-  --primary: #a855f7; /* Purple */
-  --primary-glow: rgba(168, 85, 247, 0.3);
-  --secondary: #06b6d4; /* Cyan */
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --border-light: rgba(255, 255, 255, 0.08);
+  /* Default: Custom Theme */
+  --bg-deep: #2A3A38;
+  --bg-gradient: radial-gradient(circle at top center, #508A80 0%, #2A3A38 60%);
+  --bg-surface: rgba(42, 58, 56, 0.6);
+  --primary: #4ED4B8;
+  --primary-glow: rgba(78, 212, 184, 0.3);
+  --secondary: #80B5A8;
+  --text-main: #FFFFFF;
+  --text-muted: #80B5A8;
+  --border-light: rgba(255, 255, 255, 0.1);
   --glass: blur(16px) saturate(180%);
   --radius: 24px;
   --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
