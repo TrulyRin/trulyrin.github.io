@@ -343,3 +343,24 @@ footer a:hover {
     font-size: 1.8rem !important;
   }
 }
+/* Private community pages retain the existing site theme. */
+.private-content { width: 100%; }
+.private-hero, .private-heading { text-align: center; margin-bottom: 42px; }
+.private-hero { padding: 36px 0 24px; }
+.private-label { color: var(--primary); font-size: .82rem; font-weight: 800; letter-spacing: .12em; margin-bottom: 18px; }
+.private-hero h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); line-height: 1.1; letter-spacing: -.04em; margin-bottom: 24px; }
+.private-hero h1 span { color: var(--primary); }
+.private-hero > p:not(.private-label), .private-heading > p:not(.private-label) { max-width: 680px; margin: 14px auto; color: var(--text-muted); line-height: 1.7; }
+.private-heading h1 { font-size: clamp(2rem, 5vw, 3rem); }
+.private-actions { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; align-items: center; margin-top: 28px; }
+.policy-section { scroll-margin-top: 110px; }
+.policy-section h2 { color: var(--primary); font-size: 1.3rem; margin-bottom: 15px; }
+.policy-section p, .policy-section ul { color: var(--text-muted); line-height: 1.85; margin-bottom: 14px; }
+.policy-section ul { padding-left: 22px; }
+.policy-section li { margin-bottom: 10px; }
+.policy-section strong { color: var(--text-main); }
+.policy-section a { color: var(--primary); }
+.policy-section .discord-btn { color: white; }
+.features-grid .policy-section { margin: 0; }
+.private-content > .features-grid { margin-bottom: 24px; }
+@media (max-width: 600px) { .private-hero { padding-top: 12px; } .policy-section { padding: 24px; } }
