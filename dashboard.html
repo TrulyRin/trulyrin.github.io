@@ -37,7 +37,7 @@
             <div class="login-card">
                 <img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true" style="width:72px;height:72px;border-radius:50%;margin-bottom:20px;border:3px solid var(--primary);">
                 <h1>Bot Dashboard</h1>
-                <p>Login with Discord to manage your server's bot settings, gank notifications, and more.</p>
+                <p>Login with Discord to manage the main server bot settings. Administrator access is required.</p>
                 <a id="login-btn" class="login-btn" href="#"><i class="fab fa-discord"></i> Login with Discord</a>
             </div>
         </div>
@@ -47,7 +47,7 @@
             <div class="servers-header">
                 <div class="user-bar" id="user-bar"></div>
                 <h1>Select a Server</h1>
-                <p>Showing servers where you have Administrator and the bot is active.</p>
+                <p>Showing the main server when your account has Administrator access.</p>
             </div>
             <div class="server-grid" id="server-grid"></div>
         </div>
@@ -65,7 +65,7 @@
 
     <div class="toast" id="toast"></div>
 
-    <script src="dashboard.js?v=3"></script>
+    <script src="dashboard.js?v=4"></script>
     <script>
         function initTheme(){const s=localStorage.getItem('theme')||'dark';document.body.setAttribute('data-theme',s);updateIcon(s);}
         function toggleTheme(){const b=document.body,c=b.getAttribute('data-theme'),n=c==='light'?'dark':'light';b.setAttribute('data-theme',n);localStorage.setItem('theme',n);updateIcon(n);}

@@ -17,6 +17,7 @@ function getApiBase() {
 }
 
 const PRIVATE_GUILD_ID = "1305511241577529354";
+const ARCHIVED_COGS = new Set(["gankping", "public_setup", "moderation", "tickets", "sticky_slowmode", "standard_antialt", "local_kos", "allies"]);
 
 // Cog metadata used client-side when bot API is unreachable
 const COG_REGISTRY = {
@@ -235,12 +236,12 @@ const DS = {
 
         // The server returns only pilot guilds where this session has Administrator.
         const botData = await this.checkBotAPI();
-        const displayGuilds = botData && Array.isArray(botData.guilds) ? botData.guilds : [];
+        const displayGuilds = botData && Array.isArray(botData.guilds) ? botData.guilds.filter(g => String(g.id) === PRIVATE_GUILD_ID) : [];
 
         if (displayGuilds.length === 0) {
             grid.innerHTML = `<div style="text-align:center;grid-column:1/-1;padding:40px;">
-                <p style="margin-bottom:12px;">No manageable pilot servers found.</p>
-                <a href="/joinds" style="color:var(--primary);">Invite Bot</a>
+                <p style="margin-bottom:12px;">No access to the main server dashboard.</p>
+                <a href="https://discord.gg/deepsaviors" style="color:var(--primary);">Contact server staff</a>
             </div>`;
             return;
         }
@@ -275,6 +276,7 @@ const DS = {
     // ── Guild Dashboard ─────────────────────────────────
 
     loadGuild: async function(guildId, discordGuild) {
+        if (String(guildId) !== PRIVATE_GUILD_ID) { this.showServers(); return; }
         document.getElementById('view-servers').style.display = 'none';
         document.getElementById('view-dashboard').style.display = 'flex';
 
@@ -306,6 +308,7 @@ const DS = {
             }
         }
 
+        cogs = Object.fromEntries(Object.entries(cogs || {}).filter(([key]) => !ARCHIVED_COGS.has(key)));
         this.currentGuild = guildInfo;
 
         // Setup Sidebar header
