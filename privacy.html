@@ -1,130 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Privacy Policy for Depths Saviors. Information we collect and how we use it.">
+    <meta name="description" content="How the private Depths Saviors bot and website process Discord data, verification fingerprints, sessions and deletion requests.">
     <title>Privacy Policy | Depths Saviors</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon"
+        href="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true"
+        type="image/gif">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="logo-group">
-                <img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true" class="logo-img">
+                <img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true"
+                    class="logo-img" alt="Depths Saviors">
                 <span class="logo-text">Depths Saviors</span>
             </a>
+
+
             <div class="nav-links">
                 <a href="/" class="nav-link">Home</a>
-                <a href="/joinds" class="nav-link">Join</a>
+                <a href="/joinds" class="nav-link">Community</a>
                 <a href="/bot" class="nav-link">Bot Guide</a>
-                <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank">
+                <a href="/dashboard" class="nav-link">Staff Dashboard</a>
+                <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank" rel="noopener noreferrer">
                     <i class="fab fa-discord"></i> Server
                 </a>
-                <button class="theme-toggle" onclick="toggleTheme()">
+                <button class="theme-toggle" aria-label="Toggle color theme" onclick="toggleTheme()">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-    <main class="main-content">
-        <div style="text-align: center; margin-bottom: 40px;">
-            <h2 style="font-size: 2.5rem; margin-bottom: 10px;">Privacy Policy</h2>
-            <p style="color: var(--text-muted);">Last Updated: January 2025</p>
-        </div>
+<main class="main-content private-content">
 
-        <div class="glass-panel">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">1. Information We Collect</h3>
-            <p style="color: var(--text-muted); margin-bottom: 15px;">To facilitate the Alliance and Gank Ping systems, Depths Saviors collects and stores the following data:</p>
-            
-            <div style="display: grid; gap: 15px;">
-                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
-                    <h4 style="color: var(--text-main); margin-bottom: 5px;">Discord Identifiers (IDs)</h4>
-                    <p style="color: var(--text-muted); font-size: 0.95rem;">
-                        We store <strong>Guild IDs</strong>, <strong>Channel IDs</strong> (for alerts), <strong>Role IDs</strong> (for pings), and <strong>User IDs</strong> (for command authorization and statistics).
-                    </p>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
-                    <h4 style="color: var(--text-main); margin-bottom: 5px;">User-Generated Content</h4>
-                    <p style="color: var(--text-muted); font-size: 0.95rem;">
-                        When you use <code>/gank</code>, we process the text details (location, server region) and any attached <strong>screenshots</strong> to redistribute them to allied servers.
-                    </p>
-                </div>
-                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
-                    <h4 style="color: var(--text-main); margin-bottom: 5px;">Interaction Data</h4>
-                    <p style="color: var(--text-muted); font-size: 0.95rem;">
-                        We track command usage frequency and reaction types (✅, ❌) to generate the <code>/gankstats</code> leaderboards.
-                    </p>
-                </div>
-            </div>
-        </div>
+<header class="private-heading"><h1>Privacy Policy</h1><p>Last updated: September 28, 2026</p></header>
+<section class="glass-panel policy-section"><h2>1. Scope and operators</h2><p>This policy covers the Depths Saviors bot, website, staff dashboard and verification page, operated by <strong>Rindw and Zako_tb</strong>. The bot serves the main Depths Saviors Discord server. The website and this policy are publicly readable; bot functions and staff settings are restricted to the community and the appropriate roles.</p><p>Public installation, external-server setup and cross-server gank broadcasts have been retired. Archiving their code does not automatically delete records previously created by those features.</p></section>
+<section class="glass-panel policy-section"><h2>2. Discord data and its purposes</h2><ul><li><strong>Account and server information:</strong> Discord user, server, channel, role and message IDs; usernames, avatars, account age, membership and permissions, as needed for sign-in, access checks, join checks and staff tools.</li><li><strong>Messages and attachments:</strong> text, post titles, links and relevant images or attachments in configured workflows, used for formatting checks, forum moderation, FAQ matching, proof review and Deepwoken build previews.</li><li><strong>Community records:</strong> points, proof references or hashes, tryout and role configuration, moderation or verification results, and guild utility records. Staff reports and operational logs may include user IDs and relevant message details.</li></ul><p>Automatic message checks run in configured channels without requiring a slash command. The bot does not currently provide an individual switch to opt out of those checks while posting there. Contact staff about a concern before using the affected channel. Leaving the server does not automatically erase existing records.</p></section>
+<section class="glass-panel policy-section" id="verification"><h2>3. Browser verification</h2>
+<p>When you choose to verify, the page produces a browser/device fingerprint and sends it with your Discord user ID and verification details to our bot API. The fingerprint can use canvas, WebGL, audio-rendering and browser/hardware characteristics. Browser metadata includes user agent, platform, screen dimensions, language, timezone, touch capability, reported CPU core count and device memory where available.</p>
+<p>Verification information is stored on the bot host and sent to the configured staff verification channel on Discord. Staff use it to compare linked accounts, review possible ban evasion and apply configured verification actions, which may include a role change, kick or ban.</p>
+<p><strong>This data is linked to your Discord account; it is not anonymous.</strong> A fingerprint match is a signal that can be wrong, particularly on shared devices. Contact an operator for review of an incorrect result. You can decline browser verification by leaving the page, but access to protected channels may remain restricted; discuss available help with staff.</p></section>
+<section class="glass-panel policy-section"><h2>4. Website storage and sign-in</h2><p>The website stores your light/dark theme preference in local storage. Verification uses a local marker to remember a submitted link. Dashboard authentication uses a server-side Discord OAuth session and a session cookie; logout ends that session. The verification sign-in flow may temporarily receive a Discord access token to confirm the account being verified.</p><p>Older dashboard versions stored Discord access tokens in local storage. The updated dashboard and legacy callback clear those old entries when opened. Clearing site data removes local preferences and markers, but does not delete records held by the bot or Discord.</p><p>Web hosting, API hosting and delivery providers receive ordinary connection information such as IP address, user agent and request details when you use their services. Error or security logs may contain that information.</p></section>
+<section class="glass-panel policy-section"><h2>5. Providers and disclosure</h2><p>Data is processed by services necessary to run these features:</p><ul><li><a href="https://discord.com/privacy">Discord</a> provides authentication, server events, messages, attachments and staff reports.</li><li><a href="https://cybrancee.com">Cybrancee</a> hosts the bot, its stored records and API. The website source is hosted on GitHub; hosting and delivery services handle website requests.</li><li><a href="https://huggingface.co/privacy">Hugging Face</a> may receive FAQ question text to generate embeddings for matching prepared answers.</li><li><a href="https://policies.google.com/privacy">Google Gemini</a> may receive selected forum text, titles and images for moderation classification.</li><li>Deepwoken Planner receives requests for build data when its links are previewed. Website assets and verification scripts may load from Google Fonts, Discord CDN, cdnjs, jsDelivr and the FingerprintJS CDN, which receive connection information.</li></ul><p>Authorized operators and relevant server staff can access records needed for support and moderation. Feature output is visible to people who can access the relevant Discord channels. We do not sell Discord data or provide it for advertising. Our bot uses AI services for inference, not to train its own models; each provider also applies its own service terms and data practices.</p></section>
+<section class="glass-panel policy-section" id="retention"><h2>6. Retention, access and deletion</h2>
+<p>The current bot does not enforce a general automatic 30-day deletion schedule. Verification fingerprints, linked account IDs, moderation records, utility data and logs may remain until manually removed. Old public-feature data and backups may also remain; retiring a feature alone does not erase them.</p>
+<p>To request access, correction or deletion, open a support ticket in <a href="https://discord.gg/deepsaviors">Depths Saviors</a> or contact <strong>@Rindw</strong> or <strong>@Zako_tb</strong> on Discord. If you cannot enter the server, contact an operator directly. Include your Discord user ID and the records concerned. Staff may verify ownership before acting.</p>
+<p>Deletion requires manual handling and may disable features that rely on the removed records. Discord messages and provider-held logs or backups are separate from bot storage and may require separate handling. Ask the operators to explain any records they cannot remove or any retention needed for an unresolved safety issue or legal obligation. No fixed completion time or backup deletion schedule is currently promised.</p></section>
+<section class="glass-panel policy-section"><h2>7. Security</h2><p>The website and production API use HTTPS, verification links are signed, and staff settings require authenticated permission checks. Fingerprinting and hashing do not make account-linked data anonymous. This policy does not claim that all stored records or backups are encrypted at rest; that has not yet been confirmed with the host. No system can guarantee absolute security.</p></section>
+<section class="glass-panel policy-section"><h2>8. Updates and contact</h2><p>This page will be updated when the bot’s scope or data practices change. For privacy questions, deletion requests, security concerns or a review of automated decisions, contact <strong>@Rindw</strong> or <strong>@Zako_tb</strong> through Discord. Also see our <a href="/terms">Terms of Service</a> and <a href="/joinds">support guide</a>.</p></section>
 
-        <div class="glass-panel">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">2. How We Use Your Data</h3>
-            <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-main);">
-                <li><strong>Functionality:</strong> IDs are strictly used to send alerts to the correct channels and ping the correct roles.</li>
-                <li><strong>Security:</strong> User IDs are used to verify permissions (e.g., ensuring only approved Allies can call ganks).</li>
-                <li><strong>Analytics:</strong> Aggregated data is used to display public statistics about rescue activity and response times.</li>
-            </ul>
-        </div>
-
-        <div class="glass-panel">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">3. Third-Party Sharing & Platforms</h3>
-            <p style="color: var(--text-muted);">
-                We do not sell, trade, or transfer your data to outside parties. However, as this service operates alongside other platforms, your usage is also subject to their respective policies:
-            </p>
-            <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-main); margin-top: 10px; margin-bottom: 10px;">
-                <li><strong>Discord:</strong> Any data sent through or displayed by the bot is subject to Discord's <a href="https://discord.com/privacy" style="color: var(--secondary);">Privacy Policy</a>.</li>
-                <li><strong>Roblox & Deepwoken:</strong> Any account linking or gameplay coordination via our tools remains subject to Roblox's Privacy Policy. We do not bypass or exploit Roblox APIs.</li>
-                <li><strong>Our Operations:</strong> All collected data is managed strictly by the bot owners (Rindw and Zako_tb) for the sole purpose of operating and securing the Depths Saviors network.</li>
-            </ul>
-        </div>
-
-        <div class="glass-panel">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">4. Data Retention & Your Rights</h3>
-            <p style="color: var(--text-muted); margin-bottom: 10px;">
-                We retain data for as long as your Guild is part of the Alliance Network.
-            </p>
-            <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-main);">
-                <li><strong>Right to Removal:</strong> If you kick the bot from your server, your configuration data remains in our database until a manual cleanup.</li>
-                <li><strong>Right to Erasure:</strong> You may request the complete deletion of your Guild's data or your User statistics by opening a ticket in our Support Server.</li>
-            </ul>
-        </div>
-
-        <div class="glass-panel">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">5. Verification & Browser Fingerprinting</h3>
-            <p style="color: var(--text-muted); margin-bottom: 10px;">
-                When you verify your Discord session through our verification page, we collect data to prevent alt accounts and ban evasion:
-            </p>
-            <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-main);">
-                <li>A browser fingerprint hash (derived from canvas, WebGL, and browser properties)</li>
-                <li>Screen resolution, color depth, and touch support</li>
-                <li>Timezone and language preferences</li>
-                <li>Browser User-Agent string</li>
-            </ul>
-            <p style="color: var(--text-muted); margin-top: 10px;">
-                This data is hashed into a non-reversible identifier. It cannot identify you personally outside of our system. This data is stored until you request erasure or your guild leaves our network.
-            </p>
-        </div>
-
-        <div class="glass-panel">
-            <h3 style="color: var(--primary); margin-bottom: 15px;">6. Contact Us</h3>
-            <p style="color: var(--text-muted);">
-                If you have questions about this Privacy Policy or need to report a breach, please join our Discord and contact <strong>@Zako_tb</strong> or <strong>@Rindw</strong>.
-            </p>
-        </div>
-
-    </main>
-
+</main>
     <footer>
         <div>
             <a href="https://www.deepsaviors.xyz/terms">Terms of Service</a>
             <a href="https://www.deepsaviors.xyz/privacy">Privacy Policy</a>
         </div>
-        <p style="margin-top: 10px;">© 2026 Depths Saviors. All rights reserved.</p>
+        <p style="margin-top: 10px;">© 2026 Depths Saviors. Not affiliated with Deepwoken.</p>
     </footer>
 
     <script>
@@ -148,4 +87,5 @@
         document.addEventListener('DOMContentLoaded', initTheme);
     </script>
 </body>
+
 </html>
