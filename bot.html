@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="Private bot guide for the Depths Saviors Discord community.">
+        content="Private bot guide for members and staff of the Depths Saviors Discord server.">
     <title>Depths Saviors Bot | Member Guide</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -40,10 +40,89 @@
     </nav>
 
     <main class="main-content">
-        <div style="text-align:center;margin-bottom:45px;"><img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&amp;animated=true" alt="Depths Saviors bot" style="width:120px;height:120px;border-radius:50%;border:3px solid var(--primary);box-shadow:0 0 40px var(--primary-glow);"><h1 style="font-size:2.8rem;margin:20px 0 10px;">Depths Saviors Bot</h1><p style="color:var(--text-muted);font-size:1.15rem;">Private tools for our main Discord server.</p></div>
-        <div class="features-grid"><div class="glass-panel"><h3>For members</h3><p>Use the verification link provided in Discord, follow channel posting rules, and use commands available to your role. Ask staff if a verification or moderation decision seems wrong.</p></div><div class="glass-panel"><h3>For staff</h3><p>The <a href="/dashboard">dashboard</a> requires Discord sign-in and Administrator access in the main server. Review automated results before acting on them.</p></div></div>
-        <div class="glass-panel"><h3>How the bot uses Discord data</h3><p>Server Members access supports join checks and member tools. Message Content access supports formatting checks, forum moderation, FAQ matching, proof detection, and link previews in configured channels. Some FAQ and forum content may be sent to Hugging Face or Google Gemini. See the <a href="/privacy">Privacy Policy</a> for details.</p></div>
-        <div class="glass-panel"><h3>Retired public features</h3><p>Public installation, alliance setup, cross-server gank alerts, and public billing offers are archived. The bot is only for the Depths Saviors main server. Old public setup instructions no longer apply.</p></div>
+        <div style="text-align: center; margin-bottom: 50px;">
+            <div style="margin-bottom: 25px;">
+                <img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true"
+                    style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--primary); box-shadow: 0 0 40px var(--primary-glow);">
+            </div>
+            <h1 style="font-size: 2.8rem; margin-bottom: 10px;">Depths Saviors Bot</h1>
+            <p
+                style="color: var(--text-muted); font-size: 1.15rem; max-width: 700px; margin: 0 auto; line-height: 1.7;">
+                Community tools for moderation, verification, and Deepwoken activities in the main
+                Depths Saviors server.
+            </p>
+            <div
+                style="margin-top: 25px; display: inline-block; background: rgba(7, 172, 147, 0.1); border: 1px solid var(--primary); padding: 10px 25px; border-radius: 30px;">
+                <i class="fas fa-gift" style="color: var(--primary); margin-right: 8px;"></i>
+                <span style="font-weight: 700; color: var(--primary);">Main Server Only</span>
+                <span style="color: var(--text-muted); margin: 0 8px;">•</span>
+                <i class="fas fa-globe" style="color: var(--primary); margin-right: 8px;"></i>
+                <span style="font-weight: 700; color: var(--primary);">Private Community Bot</span>
+            </div>
+        </div>
+
+        <!-- What It Does -->
+        <div class="glass-panel">
+            <h3 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-crosshairs"
+                    style="margin-right: 10px;"></i>What Does the Bot Do?</h3>
+            <p style="color: var(--text-muted); line-height: 1.8; font-size: 1.05rem;">
+                The bot helps staff moderate configured channels, verify members, answer common questions,
+                and run community activities. Members can use commands available to their role.
+                Public installation and cross-server alliance features have been retired.
+            </p>
+        </div>
+
+        <!-- Key Features -->
+        <div class="features-grid" style="margin-bottom: 25px;">
+            <div class="glass-panel" style="margin: 0;">
+                <i class="fas fa-bolt" style="font-size: 1.8rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h4 style="margin-bottom: 8px;">Member Verification</h4>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Join checks and optional browser verification
+                    help staff review possible alternate accounts.</p>
+            </div>
+            <div class="glass-panel" style="margin: 0;">
+                <i class="fas fa-user-shield"
+                    style="font-size: 1.8rem; color: var(--secondary); margin-bottom: 15px;"></i>
+                <h4 style="margin-bottom: 8px;">Community Moderation</h4>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Format checks, forum moderation, and FAQ replies
+                    support configured channels.</p>
+            </div>
+            <div class="glass-panel" style="margin: 0;">
+                <i class="fas fa-chart-bar" style="font-size: 1.8rem; color: var(--primary); margin-bottom: 15px;"></i>
+                <h4 style="margin-bottom: 8px;">Deepwoken Utilities</h4>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Build previews, tryouts, points, and
+                    role commands support activity in the main server.
+                </p>
+            </div>
+        </div>
+
+        <!-- Commands Reference -->
+        <div class="glass-panel">
+            <h3 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-terminal"
+                    style="margin-right: 10px;"></i>Using the Bot</h3>
+            <div class="cmd-box"><code>Verification</code><span>Use the personal link provided by the bot and read the <a href="/privacy#verification">privacy notice</a> first.</span></div>
+            <div class="cmd-box"><code>Posting rules</code><span>Follow pinned formats in channels with automated checks.</span></div>
+            <div class="cmd-box"><code>Member tools</code><span>Use the commands available to your role in the main server.</span></div>
+            <div class="cmd-box"><code>Staff dashboard</code><span>Authorized main-server administrators can manage private modules through the <a href="/dashboard">dashboard</a>.</span></div>
+        </div>
+
+        <!-- CTA -->
+        <div class="glass-panel"
+            style="text-align: center; border: 1px solid var(--primary); background: rgba(7, 172, 147, 0.05);">
+            <h3 style="margin-bottom: 10px;">Join the Depths Saviors community</h3>
+            <p style="color: var(--text-muted); margin-bottom: 25px;">The bot serves our main Discord server only. See the community guide and policies
+                before using its features.</p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <a href="https://discord.gg/deepsaviors" target="_blank"
+                    style="background: var(--primary); color: white; padding: 14px 35px; border-radius: 30px; text-decoration: none; font-weight: 700; box-shadow: 0 0 20px var(--primary-glow); transition: 0.3s;">
+                    <i class="fas fa-robot" style="margin-right: 8px;"></i>Join Server
+                </a>
+                <a href="/joinds"
+                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-main); padding: 14px 35px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.3s;">
+                    <i class="fas fa-handshake" style="margin-right: 8px;"></i>Community Guide
+                </a>
+            </div>
+        </div>
     </main>
 
     <footer>
