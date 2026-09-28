@@ -49,7 +49,7 @@
                 <div class="scan-line" id="scanLine"></div>
             </div>
             <h2 style="font-size:1.8rem;margin-bottom:10px;color:var(--text-main);" id="titleText">Security Verification</h2>
-            <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:5px;" id="descText">Please verify your session to access the server.</p>
+            <p style="color:var(--text-muted);font-size:1.05rem;margin-bottom:5px;" id="descText">Verification is for members of the main Depths Saviors server.</p>
             <button class="verify-btn" id="verifyBtn" disabled>
                 <i class="fas fa-fingerprint btn-icon"></i>
                 <i class="fas fa-circle-notch spinner"></i>
@@ -58,21 +58,20 @@
             <div class="error-text" id="errorText"></div>
             <div class="success-text" id="successText">You may now return to Discord.</div>
             <div class="expired-notice" id="expiredNotice">
-                <i class="fas fa-clock"></i> Your link has expired. Please request a new one in the Discord server by typing <strong>/antialt testjoin</strong> or rejoining.
+                <i class="fas fa-clock"></i> Your link has expired. Contact Depths Saviors staff to request a new verification link.
             </div>
-            <div class="security-badge"><i class="fas fa-lock"></i> HMAC-Signed &amp; Encrypted</div>
+            <div class="security-badge"><i class="fas fa-lock"></i> Signed link · HTTPS connection</div>
             <div class="warning-box">
                 <div class="warning-title"><i class="fas fa-exclamation-triangle"></i> Anti-Evasion Notice</div>
                 <ul>
-                    <li>Your device fingerprint is cross-checked against <strong>all banned accounts</strong>.</li>
+                    <li>Your browser fingerprint is compared with <strong>stored account and ban records</strong>.</li>
                     <li>If linked to a banned user, you will be <strong>automatically banned</strong>.</li>
                     <li>Only <strong>1 alt account</strong> per device is allowed. Additional alts will be kicked.</li>
-                    <li>Using VPNs or incognito does <strong>not</strong> bypass this system.</li>
+                    <li>Shared devices and fingerprint matches can produce errors. <a href="/joinds">Contact staff for review</a>.</li>
                 </ul>
             </div>
             <div class="privacy-notice">
-                By clicking verify, you agree to our <a href="/privacy" target="_blank">Privacy Policy</a>.<br>
-                We collect anonymized browser data to prevent alt accounts.
+                Choosing Verify sends a browser fingerprint and device/browser metadata linked to your Discord account to our bot host and staff verification channel. This data is not anonymous.<br>Read our <a href="/privacy#verification" target="_blank" rel="noopener noreferrer">Privacy Policy</a> and <a href="/terms" target="_blank" rel="noopener noreferrer">Terms</a> before continuing. You can leave this page and <a href="/joinds">contact staff</a> for help.
             </div>
         </div>
     </div>
@@ -243,7 +242,7 @@
             });
 
             // Validate all required params including signature
-            if (!token || !guildId || !userId || !sig) {
+            if (!token || guildId !== "1305511241577529354" || !userId || !sig) {
                 showError("Invalid or tampered verification link.");
                 descText.innerText = "Missing required parameters. Please request a new link in Discord.";
                 btn.style.display = 'none';
