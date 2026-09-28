@@ -35,35 +35,10 @@
         <p class="auth-error" id="error" style="display:none;"></p>
     </div>
     <script>
-        (function() {
-            const hash = window.location.hash.substring(1);
-            const params = new URLSearchParams(hash);
-            const token = params.get('access_token');
-            const tokenType = params.get('token_type');
-            const error = params.get('error');
-
-            if (error) {
-                document.getElementById('spinner').style.display = 'none';
-                document.getElementById('status').style.display = 'none';
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('error').textContent = 'Authentication failed: ' + (params.get('error_description') || error);
-                return;
-            }
-
-            if (!token) {
-                document.getElementById('spinner').style.display = 'none';
-                document.getElementById('status').style.display = 'none';
-                document.getElementById('error').style.display = 'block';
-                document.getElementById('error').textContent = 'No access token received. Please try logging in again.';
-                return;
-            }
-
-            localStorage.setItem('ds_token', token);
-            localStorage.setItem('ds_token_type', tokenType || 'Bearer');
-            localStorage.setItem('ds_token_ts', Date.now().toString());
-            document.getElementById('status').textContent = 'Success! Redirecting to dashboard...';
-            setTimeout(function() { window.location.href = '/dashboard'; }, 500);
-        })();
+        // Retired implicit dashboard callback: discard legacy tokens and use server-side sign-in.
+        history.replaceState(null, '', '/callback');
+        for (const key of ['ds_token', 'ds_token_type', 'ds_token_ts']) localStorage.removeItem(key);
+        window.location.replace('/dashboard');
     </script>
 </body>
 </html>
