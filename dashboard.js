@@ -183,7 +183,7 @@ const DS = {
         return null;
     },
 
-    /** Show a warning when browser shields are blocking API calls */
+    /** Show a warning when the browser blocks the dashboard API request */
     _showShieldWarning: function() {
         if (this._shieldWarned) return;
         this._shieldWarned = true;
@@ -195,12 +195,12 @@ const DS = {
         warning.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;background:#1a1a2e;border-bottom:3px solid #E6A23C;padding:16px 24px;text-align:center;font-size:0.9rem;';
         warning.innerHTML = `
             <p style="color:#E6A23C;font-weight:700;margin-bottom:6px;">
-                <i class="fas fa-shield-halved"></i> ${browserName} is blocking Discord API requests
+                <i class="fas fa-shield-halved"></i> ${browserName} blocked the dashboard API request
             </p>
             <p style="color:#ccc;font-size:0.85rem;">
                 ${isBrave 
-                    ? 'Click the <strong>Brave Shield (lion icon)</strong> in the address bar → set Shields to <strong>Down</strong> for this site, then reload.'
-                    : 'Your browser\'s privacy settings or an ad blocker may be blocking cross-origin requests to <code>discord.com</code>. Try disabling your shield/blocker for this site, or use a different browser.'}
+                    ? 'The request to <code>api.deepsaviors.xyz</code> was blocked by Brave or an extension. If you trust this site, allow that host in your blocker for this site, then reload. You can also try another browser.'
+                    : 'The request to <code>api.deepsaviors.xyz</code> was blocked by your browser or an extension. Allow that host for this site or try another browser.'}
             </p>
             <button onclick="this.parentElement.remove()" style="margin-top:8px;background:#E6A23C;color:#000;border:none;padding:6px 18px;border-radius:6px;font-weight:600;cursor:pointer;">Dismiss</button>
         `;
