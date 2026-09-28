@@ -201,6 +201,26 @@ body {
   animation: fadeIn 0.8s ease-out;
 }
 
+/* Keep links inside body copy in the site's palette in both themes. */
+.main-content p a,
+.main-content li a,
+.cmd-box a {
+  color: var(--text-main);
+  text-decoration-color: var(--primary);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.main-content p a:hover,
+.main-content li a:hover,
+.cmd-box a:hover,
+.main-content p a:focus-visible,
+.main-content li a:focus-visible,
+.cmd-box a:focus-visible {
+  color: var(--primary);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
