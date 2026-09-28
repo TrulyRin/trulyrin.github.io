@@ -4,8 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="The private Discord bot for the Depths Saviors community. Member guidance, verification, staff tools and data policies.">
-    <title>Private Community Bot | Depths Saviors</title>
+    <meta name="description"
+        content="Official home of Depths Saviors, the premier Deepwoken rescue service and alliance utility bot.">
+    <title>Depths Saviors | Deepwoken Utility</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon"
@@ -19,42 +20,74 @@
         <div class="nav-container">
             <a href="/" class="logo-group">
                 <img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true"
-                    class="logo-img" alt="Depths Saviors">
+                    class="logo-img">
                 <span class="logo-text">Depths Saviors</span>
             </a>
 
 
             <div class="nav-links">
                 <a href="/" class="nav-link active">Home</a>
-                <a href="/joinds" class="nav-link">Community</a>
+                <a href="/joinds" class="nav-link">Join</a>
                 <a href="/bot" class="nav-link">Bot Guide</a>
-                <a href="/dashboard" class="nav-link">Staff Dashboard</a>
-                <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank" rel="noopener noreferrer">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank">
                     <i class="fab fa-discord"></i> Server
                 </a>
-                <button class="theme-toggle" aria-label="Toggle color theme" onclick="toggleTheme()">
+                <button class="theme-toggle" onclick="toggleTheme()">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-<main class="main-content private-content">
+    <header class="main-content" style="text-align: center; padding-top: 180px;">
+        <h1 style="font-size: 4rem; font-weight: 900; letter-spacing: -2px; line-height: 1.1; margin-bottom: 20px;">
+            Protect Your <span
+                style="color: var(--primary); text-shadow: 0 0 30px var(--primary-glow);">Progression.</span>
+        </h1>
+        <p
+            style="max-width: 650px; margin: 0 auto 40px; font-size: 1.1rem; color: var(--text-muted); line-height: 1.6;">
+            The premier Deepwoken rescue service. Instant multi-guild gank alerts, screenshot verification, and
+            real-time alliance coordination.
+        </p>
 
-<header class="private-hero">
-    <p class="private-label">DEPTHS SAVIORS COMMUNITY</p>
-    <h1>Our server.<br><span>Our community tools.</span></h1>
-    <p>Moderation, member verification and Deepwoken utilities for the Depths Saviors Discord server. The bot operates exclusively in our main server.</p>
-    <div class="private-actions"><a class="discord-btn" href="/bot">Explore the bot guide</a><a class="nav-link" href="/joinds">Community &amp; support</a></div>
-</header>
-<div class="features-grid">
-<section class="glass-panel policy-section"><h2>Member verification</h2><p>Server join checks and browser verification help staff review possible alternate accounts and ban evasion. Read what verification collects before continuing.</p><a href="/privacy#verification">Verification privacy</a></section>
-<section class="glass-panel policy-section"><h2>Community moderation</h2><p>Configured channels use post formatting checks, forum moderation and FAQ replies. Staff manage the rules and review issues raised by members.</p><a href="/bot">Member guide</a></section>
-<section class="glass-panel policy-section"><h2>Guild utilities</h2><p>Points, proof submissions, tryouts, roles and Deepwoken build previews support activity within our own community.</p><a href="/dashboard">Staff dashboard</a></section>
-</div>
-<section class="glass-panel policy-section"><h2>Private bot access</h2><p>Public bot installation, cross-server gank alerts and alliance-network setup have been retired. This website remains public so members can read our guides and policies. Dashboard settings require an authorized Discord account with Administrator access in the main server.</p></section>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="https://discord.com/oauth2/authorize?client_id=1530945491863339048" target="_blank"
+                style="background: var(--primary); color: white; padding: 14px 35px; border-radius: 30px; text-decoration: none; font-weight: 700; box-shadow: 0 0 20px var(--primary-glow); transition: 0.3s;">
+                Invite Bot
+            </a>
+            <a href="/joinds"
+                style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-light); color: var(--text-main); padding: 14px 35px; border-radius: 30px; text-decoration: none; font-weight: 600; transition: 0.3s;">
+                Join Depths Saviors
+            </a>
+        </div>
+    </header>
 
-</main>
+    <section class="features-grid"
+        style="max-width: 1200px; margin: 0 auto 60px; padding: 0 20px;">
+        <div class="glass-panel" style="margin: 0; transition: transform 0.3s;">
+            <i class="fas fa-bullhorn" style="font-size: 2rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h3 style="margin-bottom: 10px;">Global Gank Pings</h3>
+            <p style="color: var(--text-muted);">Alert all allied guilds instantly. Includes location data and
+                screenshot evidence for verification.</p>
+        </div>
+
+        <div class="glass-panel" style="margin: 0; transition: transform 0.3s;">
+            <i class="fas fa-shield-halved" style="font-size: 2rem; color: var(--secondary); margin-bottom: 20px;"></i>
+            <h3 style="margin-bottom: 10px;">Alliance Network</h3>
+            <p style="color: var(--text-muted);">Sync commands across servers. Admins can link guilds to create a
+                massive safety network for depths saving.</p>
+        </div>
+
+        <div class="glass-panel" style="margin: 0; transition: transform 0.3s;">
+            <i class="fas fa-chart-line" style="font-size: 2rem; color: var(--primary); margin-bottom: 20px;"></i>
+            <h3 style="margin-bottom: 10px;">Combat Statistics</h3>
+            <p style="color: var(--text-muted);">Track response times, attendance, and top callers with
+                <code>/gankstats</code> to stay up to date.
+            </p>
+        </div>
+    </section>
+
     <footer>
         <div>
             <a href="https://www.deepsaviors.xyz/terms">Terms of Service</a>

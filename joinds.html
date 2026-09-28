@@ -1,59 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Access and support information for the private Depths Saviors Discord community bot.">
-    <title>Community & Support | Depths Saviors</title>
+    <meta name="description" content="Join the Depths Saviors alliance network — set up the bot in your Discord server.">
+    <title>Join Depths Saviors | Alliance Setup</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="icon"
-        href="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true"
-        type="image/gif">
+    <link rel="icon" href="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true" type="image/gif">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="logo-group">
-                <img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true"
-                    class="logo-img" alt="Depths Saviors">
+                <img src="https://cdn.discordapp.com/avatars/1373795045529878560/a_8bf1675cdc4f6feb3181f2d90562b4d9.gif?size=1024&animated=true" class="logo-img">
                 <span class="logo-text">Depths Saviors</span>
             </a>
 
-
             <div class="nav-links">
                 <a href="/" class="nav-link">Home</a>
-                <a href="/joinds" class="nav-link active">Community</a>
+                <a href="/joinds" class="nav-link active">Join</a>
                 <a href="/bot" class="nav-link">Bot Guide</a>
-                <a href="/dashboard" class="nav-link">Staff Dashboard</a>
-                <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank" rel="noopener noreferrer">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="https://discord.gg/deepsaviors" class="discord-btn" target="_blank">
                     <i class="fab fa-discord"></i> Server
                 </a>
-                <button class="theme-toggle" aria-label="Toggle color theme" onclick="toggleTheme()">
+                <button class="theme-toggle" onclick="toggleTheme()">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
         </div>
     </nav>
 
-<main class="main-content private-content">
+    <main class="main-content">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h2 style="font-size: 2.5rem; margin-bottom: 10px;">Join Depths Saviors</h2>
+            <p style="color: var(--text-muted);">Connect your guild to the alliance network in 3 simple steps.</p>
+        </div>
 
-<header class="private-heading"><p class="private-label">COMMUNITY &amp; SUPPORT</p><h1>Find your place in Depths Saviors.</h1><p>The bot serves our main Discord server. Joining the community does not grant staff access.</p></header>
-<section class="glass-panel policy-section"><h2>Join the community</h2><p>Use our Discord server invitation and follow the server rules and onboarding instructions. Membership and access to channels are managed by staff.</p><p><a class="discord-btn" href="https://discord.gg/deepsaviors" target="_blank" rel="noopener noreferrer">Open Depths Saviors in Discord</a></p></section>
-<section class="glass-panel policy-section"><h2>Get help or request a review</h2><p>Open a support ticket in the server or contact <strong>@Rindw</strong> or <strong>@Zako_tb</strong> on Discord. Use this contact for broken verification links, moderation appeals, bot problems and abuse reports. If you cannot access server channels, contact either operator directly.</p><p>Describe the issue and include the relevant Discord user ID or message link when needed. Never send your password, login token or a private verification link in a public channel.</p></section>
-<section class="glass-panel policy-section"><h2>Privacy and deletion requests</h2><p>Contact the same operators to request access to, correction of, or deletion of bot-managed records linked to your Discord user ID. Say which records or feature your request concerns. Staff may ask you to confirm account ownership.</p><p>See the <a href="/privacy#retention">retention and deletion information</a> for current limitations.</p></section>
-<section class="glass-panel policy-section"><h2>Staff access</h2><p>Authorized administrators can <a href="/dashboard">sign in to the staff dashboard</a>. Public bot invitations and external-server onboarding are closed.</p></section>
+        <div class="glass-panel" style="display: flex; gap: 20px;">
+            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--primary-glow); border-radius: 50%; color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800;">1</div>
+            <div>
+                <h4 style="font-size: 1.2rem; margin-bottom: 8px;">Invite the Bot</h4>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Add Depths Saviors to your server. It requires permissions to view channels and send messages.</p>
+                <a href="https://discord.com/oauth2/authorize?client_id=1530945491863339048" target="_blank"
+                   style="display: inline-block; background: var(--primary); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+                    Invite Link <i class="fas fa-external-link-alt" style="margin-left: 5px; font-size: 0.8em;"></i>
+                </a>
+            </div>
+        </div>
 
-</main>
+        <div class="glass-panel" style="display: flex; gap: 20px;">
+            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--primary-glow); border-radius: 50%; color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800;">2</div>
+            <div>
+                <h4 style="font-size: 1.2rem; margin-bottom: 8px;">Request Approval</h4>
+                <p style="color: var(--text-muted); margin-bottom: 10px;">
+                    For security, all guilds must be manually whitelisted. Send your server invite link to an admin via Discord:
+                </p>
+                <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; border-left: 2px solid var(--secondary);">
+                    <div style="margin-bottom: 5px; font-family: monospace;">@Rindw (Co-Owner)</div>
+                    <div style="font-family: monospace;">@Zako_tb (Owner)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="display: flex; gap: 20px;">
+            <div style="flex-shrink: 0; width: 40px; height: 40px; background: var(--primary-glow); border-radius: 50%; color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800;">3</div>
+            <div style="width: 100%;">
+                <h4 style="font-size: 1.2rem; margin-bottom: 8px;">Configure Settings</h4>
+                <p style="color: var(--text-muted);">Once approved, run these commands in your server to finalize setup.</p>
+                
+                <div class="cmd-box">
+                    <code>/setchannel #alerts</code>
+                    <span>Select the text channel where gank alerts will appear.</span>
+                </div>
+                <div class="cmd-box">
+                    <code>/setgankping @Role</code>
+                    <span>Choose the role to ping when a rescue is needed.</span>
+                </div>
+                <div class="cmd-box">
+                    <code>/setallyrole @Role</code>
+                    <span>Authorize specific members to call ganks (Admins can always call).</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <p style="color: var(--text-muted);">Commands not working? Check <code class="cmd">/gankhelp</code> or contact support.</p>
+        </div>
+    </main>
+
     <footer>
         <div>
             <a href="https://www.deepsaviors.xyz/terms">Terms of Service</a>
             <a href="https://www.deepsaviors.xyz/privacy">Privacy Policy</a>
         </div>
-        <p style="margin-top: 10px;">© 2026 Depths Saviors. Not affiliated with Deepwoken.</p>
+        <p style="margin-top: 10px;">© 2026 Depths Saviors.</p>
     </footer>
 
     <script>
@@ -77,5 +120,4 @@
         document.addEventListener('DOMContentLoaded', initTheme);
     </script>
 </body>
-
 </html>
