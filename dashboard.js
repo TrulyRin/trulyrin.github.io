@@ -18,15 +18,8 @@ function getApiBase() {
 
 const PRIVATE_GUILD_ID = "1305511241577529354";
 
-// Cog metadata used client-side when bot API is unreachable
+// Private module allowlist. The API remains the authority for access.
 const COG_REGISTRY = {
-    gankping:         { name: "Gank Notifications",     icon: "fa-bullhorn",         scope: "global"  },
-    public_setup:     { name: "Server Setup",            icon: "fa-wand-magic-sparkles", scope: "public"  },
-    moderation:       { name: "Moderation & AutoMod",    icon: "fa-shield-halved",   scope: "public"  },
-    tickets:          { name: "Tickets",                 icon: "fa-ticket",          scope: "public"  },
-    sticky_slowmode:  { name: "Sticky & Slowmode",       icon: "fa-thumbtack",       scope: "public"  },
-    standard_antialt: { name: "Standard Anti-Alt",       icon: "fa-user-shield",     scope: "public"  },
-    local_kos:        { name: "Local KOS",               icon: "fa-crosshairs",      scope: "public"  },
     antialt:          { name: "Anti-Alt Verification",   icon: "fa-shield-halved",    scope: "private" },
     points:           { name: "Points System",           icon: "fa-chart-line",       scope: "private" },
     allies:           { name: "Ally Management",         icon: "fa-handshake",        scope: "private" },
@@ -35,7 +28,7 @@ const COG_REGISTRY = {
     botstats:         { name: "Bot Statistics",           icon: "fa-chart-bar",        scope: "private" },
     format_enforcer:  { name: "Format Enforcer",         icon: "fa-align-left",       scope: "private" },
     forum_moderator:  { name: "Forum Moderator",         icon: "fa-comments",         scope: "private" },
-    faq:              { name: "FAQ & Questions",          icon: "fa-circle-question",  scope: "global"  },
+    faq:              { name: "FAQ & Questions",          icon: "fa-circle-question",  scope: "private"  },
     deepwoken:        { name: "Build Tracker",            icon: "fa-gamepad",          scope: "private" },
     tryout:           { name: "Tryout System",            icon: "fa-clipboard-check",  scope: "private" },
     kos:              { name: "KOS System",               icon: "fa-crosshairs",       scope: "private" },
@@ -53,6 +46,7 @@ const DS = {
     botApiOnline: false,
 
     init: function() {
+        for (const key of ['ds_token', 'ds_token_type', 'ds_token_ts']) localStorage.removeItem(key);
         // Setup Sidebar Toggle
         const st = document.getElementById('sidebar-toggle');
         const sb = document.getElementById('dash-sidebar');
@@ -187,20 +181,11 @@ const DS = {
         if (this._shieldWarned) return;
         this._shieldWarned = true;
 
-        const isBrave = navigator.brave && typeof navigator.brave.isBrave === 'function';
-        const browserName = isBrave ? 'Brave' : 'your browser';
-
         const warning = document.createElement('div');
         warning.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:10000;background:#1a1a2e;border-bottom:3px solid #E6A23C;padding:16px 24px;text-align:center;font-size:0.9rem;';
         warning.innerHTML = `
-            <p style="color:#E6A23C;font-weight:700;margin-bottom:6px;">
-                <i class="fas fa-shield-halved"></i> ${browserName} is blocking Discord API requests
-            </p>
-            <p style="color:#ccc;font-size:0.85rem;">
-                ${isBrave 
-                    ? 'Click the <strong>Brave Shield (lion icon)</strong> in the address bar → set Shields to <strong>Down</strong> for this site, then reload.'
-                    : 'Your browser\'s privacy settings or an ad blocker may be blocking cross-origin requests to <code>discord.com</code>. Try disabling your shield/blocker for this site, or use a different browser.'}
-            </p>
+            <p style="color:#E6A23C;font-weight:700;margin-bottom:6px;">Unable to connect to the staff dashboard</p>
+            <p style="color:#ccc;font-size:0.85rem;">Check your connection and try again. If the problem continues, contact Depths Saviors staff.</p>
             <button onclick="this.parentElement.remove()" style="margin-top:8px;background:#E6A23C;color:#000;border:none;padding:6px 18px;border-radius:6px;font-weight:600;cursor:pointer;">Dismiss</button>
         `;
         document.body.prepend(warning);
@@ -233,24 +218,16 @@ const DS = {
         const grid = document.getElementById('server-grid');
         grid.innerHTML = `<div class="skeleton" style="height:120px;grid-column:1/-1;"></div>`;
 
-        // The server returns only pilot guilds where this session has Administrator.
+        // Only show the main guild after the server has checked Administrator access.
         const botData = await this.checkBotAPI();
-        const displayGuilds = botData && Array.isArray(botData.guilds) ? botData.guilds : [];
+        const displayGuilds = botData && Array.isArray(botData.guilds) ? botData.guilds.filter(g => String(g.id) === PRIVATE_GUILD_ID) : [];
 
         if (displayGuilds.length === 0) {
             grid.innerHTML = `<div style="text-align:center;grid-column:1/-1;padding:40px;">
-                <p style="margin-bottom:12px;">No manageable pilot servers found.</p>
-                <a href="/joinds" style="color:var(--primary);">Invite Bot</a>
+                <p style="margin-bottom:12px;">${botData ? 'This dashboard is only for authorized Depths Saviors administrators.' : 'The staff dashboard is currently unavailable. Please try again later.'}</p>
+                <a href="/joinds" style="color:var(--primary);">Contact Depths Saviors staff</a>
             </div>`;
             return;
-        }
-
-        if (!this.botApiOnline) {
-            grid.insertAdjacentHTML('beforebegin', 
-                `<div style="text-align:center;padding:10px 20px;margin-bottom:10px;">
-                    <p style="color:#E6A23C;font-size:0.85rem;"><i class="fas fa-exclamation-triangle"></i> Bot API not connected — showing all your admin servers. Settings management requires the bot to be running.</p>
-                    <p style="color:var(--text-muted);font-size:0.8rem;margin-top:4px;">API URL: <code>${this.apiBase}</code> · To change: <code>localStorage.setItem('ds_api_url','http://YOUR_IP:8080/api')</code></p>
-                </div>`);
         }
 
         grid.innerHTML = '';
@@ -275,37 +252,25 @@ const DS = {
     // ── Guild Dashboard ─────────────────────────────────
 
     loadGuild: async function(guildId, discordGuild) {
+        this.currentGuild = null;
+        this.channels = [];
+        this.roles = [];
+        document.getElementById('cog-nav').innerHTML = '';
+        document.getElementById('dash-content').innerHTML = '';
+        if (String(guildId) !== PRIVATE_GUILD_ID) {
+            this.toast('This dashboard is private to Depths Saviors.', 'error');
+            await this.showServers();
+            return;
+        }
         document.getElementById('view-servers').style.display = 'none';
         document.getElementById('view-dashboard').style.display = 'flex';
-
-        // Try to get overview from bot API
         const res = await this.fetchAPI(`/guild/${guildId}/overview`);
-
-        let guildInfo, cogs, isPrivate;
-
-        if (res) {
-            // Bot API available — use full data
-            guildInfo = res.guild;
-            cogs = res.cogs;
-            isPrivate = res.is_private;
-        } else {
-            // Bot API unavailable — use Discord data + client-side cog registry
-            guildInfo = {
-                id: discordGuild ? discordGuild.id : guildId,
-                name: discordGuild ? discordGuild.name : `Server ${guildId}`,
-                icon: discordGuild && discordGuild.icon 
-                    ? `https://cdn.discordapp.com/icons/${guildId}/${discordGuild.icon}.png` 
-                    : null,
-            };
-            isPrivate = guildId === PRIVATE_GUILD_ID;
-            cogs = {};
-            for (const [key, meta] of Object.entries(COG_REGISTRY)) {
-                if (meta.scope === "global" || meta.scope === "public" || isPrivate) {
-                    cogs[key] = meta;
-                }
-            }
+        if (!res || String(res.guild?.id) !== PRIVATE_GUILD_ID || !res.is_private) {
+            document.getElementById('dash-content').innerHTML = '<div class="setting-card"><h2>Settings unavailable</h2><p>We could not confirm your access to the private server. Sign in again or contact staff.</p><a href="/dashboard">Return to sign-in</a></div>';
+            return;
         }
-
+        const guildInfo = res.guild;
+        const cogs = Object.fromEntries(Object.entries(res.cogs || {}).filter(([key]) => Object.hasOwn(COG_REGISTRY, key)));
         this.currentGuild = guildInfo;
 
         // Setup Sidebar header
@@ -333,18 +298,6 @@ const DS = {
         const content = document.getElementById('dash-content');
         nav.innerHTML = '';
         content.innerHTML = '';
-
-        // Show connection warning if bot API is down
-        if (!this.botApiOnline) {
-            content.innerHTML = `
-                <div class="setting-card" style="border-color:#E6A23C;margin-bottom:20px;">
-                    <h3 style="color:#E6A23C;"><i class="fas fa-exclamation-triangle"></i> Bot API Not Connected</h3>
-                    <p style="color:var(--text-muted);margin-top:8px;">The bot's API server is not reachable. Settings panels are shown but cannot load or save data until the bot is running and accessible.</p>
-                    <p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;">Current API URL: <code>${this.apiBase}</code></p>
-                    <p style="color:var(--text-muted);font-size:0.85rem;margin-top:4px;">To set your API URL, open browser console and run: <code>localStorage.setItem('ds_api_url', 'http://YOUR_IP:8080/api')</code></p>
-                </div>
-            `;
-        }
 
         let first = true;
         for (const [key, meta] of Object.entries(cogs)) {
@@ -440,415 +393,14 @@ const DS = {
         }[char]));
     },
 
-    renderPublicPilotPanel: async function(key) {
-        const gid = this.currentGuild.id;
-        const container = document.getElementById(`content-${key}`);
-        const data = await this.fetchAPI(`/guild/${gid}/public-config`);
-        if (!data) return;
-        const isPro = !!data.is_pro;
-        const theme = data.theme || { name: 'aurora' };
-        const guided = data.guided_setup || { pack: 'community', theme: theme.name || 'aurora' };
-        const customAccent = guided.custom_accent || theme.custom_accent || '#3BB4A0';
-        const themeNames = isPro ? ['aurora', 'abyss', 'ember', 'mist', 'void'] : ['aurora', 'abyss'];
-        const themeOptions = selected => themeNames.map(name => `<option value="${name}" ${name === selected ? 'selected' : ''}>${name[0].toUpperCase() + name.slice(1)}</option>`).join('');
-
-        if (key === 'public_setup') {
-            container.innerHTML = `
-                <div class="setting-card">
-                    <h3><i class="fas fa-wand-magic-sparkles"></i> Server Setup</h3>
-                    <p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px;">Choose an additive pack, preview exactly what is missing, then explicitly apply it. Existing channels and roles are never renamed, reordered, or overwritten.</p>
-                    <div class="split-columns">
-                        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;"><div class="setting-label">Pack</div><select id="pilot-setup-pack" class="ds-select"><option value="community" ${guided.pack === 'community' ? 'selected' : ''}>Community</option><option value="competitive" ${guided.pack === 'competitive' ? 'selected' : ''}>Competitive / Gank</option><option value="support" ${guided.pack === 'support' ? 'selected' : ''}>Support</option><option value="full" ${guided.pack === 'full' ? 'selected' : ''}>Full Server</option></select></div>
-                        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;"><div class="setting-label">Theme</div><select id="pilot-setup-theme" class="ds-select">${themeOptions(guided.theme)}</select></div>
-                        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;"><div class="setting-label">Custom accent ${isPro ? '' : '<small>(Pro)</small>'}</div><input id="pilot-setup-accent" type="color" value="${customAccent}" ${isPro ? '' : 'disabled'}></div>
-                    </div>
-                    <div id="pilot-setup-preview" style="display:none;margin-top:16px;color:var(--text-muted);"></div>
-                    <div class="setting-row" style="margin-top:16px;border-top:none;gap:8px;justify-content:flex-start;"><button class="btn-save" style="background:#555;" onclick="DS.previewPublicSetup()">Preview Missing Resources</button><button class="btn-save" onclick="DS.applyPublicSetup()">Apply Additive Setup</button><button class="btn-save" style="background:transparent;border:1px solid var(--border);" onclick="DS.savePublicSetup()">Save Public Setup</button></div>
-                </div>`;
-            return;
-        }
-
-        if (key === 'moderation') {
-            const config = data.automod_config || {};
-            const logging = data.logging_config || {};
-            const ignoreText = value => Array.isArray(value) ? value.join(', ') : '';
-            const terms = Array.isArray(config.blocked_terms) ? config.blocked_terms.join('\n') : '';
-            const actions = Array.isArray(config.actions) && config.actions.length ? config.actions : ['delete', 'warn', 'staff_alert', 'case'];
-            const actionBox = (name, label) => `<label style="margin-right:12px;display:inline-flex;gap:5px;align-items:center;"><input type="checkbox" class="automod-action" value="${name}" ${actions.includes(name) ? 'checked' : ''}>${label}</label>`;
-            container.innerHTML = `
-                <div class="setting-card">
-                    <h3><i class="fas fa-shield-halved"></i> AutoMod Rules</h3>
-                    <p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px;">Rules create local cases and can alert staff. The pilot never sends message bodies to AI.</p>
-                    <div class="setting-row" style="flex-wrap:wrap;gap:8px;"><div class="setting-label" style="width:100%;">Safe actions</div>${actionBox('delete', 'Delete')}${actionBox('warn', 'Warn')}${actionBox('timeout', 'Timeout')}${actionBox('quarantine', 'Quarantine')}${actionBox('staff_alert', 'Staff alert')}${actionBox('case', 'Case')}<label style="margin-left:12px;display:inline-flex;gap:5px;align-items:center;"><input id="automod-native-enabled" type="checkbox" ${config.native_enabled ? 'checked' : ''}>Enable native Discord AutoMod</label></div>
-                    <div class="split-columns"><div class="split-col"><div class="setting-row"><div class="setting-label">Block invites</div><input id="automod-invites" type="checkbox" ${config.block_invites ? 'checked' : ''}></div><div class="setting-row"><div class="setting-label">Block links</div><input id="automod-links" type="checkbox" ${config.block_links ? 'checked' : ''}></div><div class="setting-row"><div class="setting-label">Max mentions</div><input id="automod-mentions" class="ds-input" type="number" min="0" max="50" value="${Number(config.max_mentions || 0)}"></div><div class="setting-row"><div class="setting-label">Max attachments</div><input id="automod-attachments" class="ds-input" type="number" min="0" max="50" value="${Number(config.max_attachments || 0)}"></div><div class="setting-row"><div class="setting-label">Max emojis</div><input id="automod-emojis" class="ds-input" type="number" min="0" max="100" value="${Number(config.max_emojis || 0)}"></div><div class="setting-row"><div class="setting-label">Message rate limit</div><input id="automod-rate" class="ds-input" type="number" min="0" max="100" value="${Number(config.rate_limit || 0)}"></div><div class="setting-row"><div class="setting-label">Timeout (seconds)</div><input id="automod-timeout" class="ds-input" type="number" min="1" max="604800" value="${Number(config.timeout_seconds || 300)}"></div></div><div class="split-col"><div class="setting-row"><div class="setting-label">Max caps percent</div><input id="automod-caps" class="ds-input" type="number" min="0" max="100" value="${Number(config.max_caps_percent || 0)}"></div><div class="setting-row"><div class="setting-label">Duplicate limit</div><input id="automod-duplicates" class="ds-input" type="number" min="0" max="20" value="${Number(config.duplicate_limit || 0)}"></div><div class="setting-row"><div class="setting-label">Quarantine role</div>${this.generateRoleSelect('automod-quarantine-role', config.quarantine_role_id)}</div><div class="setting-row"><div class="setting-label">Staff alert channel</div>${this.generateChannelSelect('automod-staff-alert', config.staff_alert_channel_id)}</div></div></div>
-                    <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;"><div class="setting-label">Blocked terms <small>one per line, max 100</small></div><textarea id="automod-terms" class="ds-input" style="width:100%;min-height:120px;">${this.escapeHtml(terms)}</textarea></div>
-                    <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;"><div class="setting-label">Ignored users, roles, bots, and channels <small>comma-separated Discord IDs</small></div><input id="logging-ignore-users" class="ds-input" placeholder="User IDs" value="${this.escapeHtml(ignoreText(logging.ignored_user_ids))}"><input id="logging-ignore-roles" class="ds-input" placeholder="Role IDs" value="${this.escapeHtml(ignoreText(logging.ignored_role_ids))}"><input id="logging-ignore-bots" class="ds-input" placeholder="Bot user IDs" value="${this.escapeHtml(ignoreText(logging.ignored_bot_ids))}"><input id="logging-ignore-channels" class="ds-input" placeholder="Channel IDs" value="${this.escapeHtml(ignoreText(logging.ignored_channel_ids))}"></div>
-                    <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;"><div class="setting-label">Ignored event families <small>comma-separated, e.g. message, member.update</small></div><input id="logging-ignore-events" class="ds-input" value="${this.escapeHtml(ignoreText(logging.ignored_event_families))}"></div>
-                    <div class="setting-row" style="margin-top:16px;border-top:none;gap:8px;"><button class="btn-save" onclick="DS.savePublicModeration()">Save AutoMod Rules</button><button class="btn-save" style="background:#555;" onclick="DS.syncNativeAutoMod()">Sync Native AutoMod</button></div>
-                </div>`;
-            return;
-        }
-
-        if (key === 'tickets') {
-            const config = data.ticket_config || {};
-            const formFields = Array.isArray(config.form_fields) && config.form_fields.length ? config.form_fields : [{ key: 'reason', label: 'How can staff help?', style: 'paragraph', required: true, max_length: 1000, placeholder: 'Describe what you need help with' }];
-            const formFieldText = formFields.map(field => [field.key, field.label, field.style || 'short', field.required === false ? 'optional' : 'required', field.max_length || 1000, field.placeholder || ''].join('|')).join('\n');
-            container.innerHTML = `
-                <div class="setting-card"><h3><i class="fas fa-ticket"></i> Ticket Configuration</h3>
-                    <p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px;">Configure up to five form fields. One field per line: <code>key|label|short-or-paragraph|required-or-optional|max-length|placeholder</code>.</p>
-                    <div class="setting-row"><div class="setting-label">Form title</div><input id="pilot-ticket-form-title" class="ds-input" maxlength="45" value="${this.escapeHtml(config.form_title || 'Open a support ticket')}"></div>
-                    <div class="setting-row"><div class="setting-label">Form description</div><input id="pilot-ticket-form-description" class="ds-input" maxlength="200" value="${this.escapeHtml(config.form_description || '')}"></div>
-                    <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:8px;"><div class="setting-label">Form fields</div><textarea id="pilot-ticket-form-fields" class="ds-input" style="width:100%;min-height:120px;">${this.escapeHtml(formFieldText)}</textarea></div>
-                    <div class="setting-row"><div class="setting-label">Ticket category</div>${this.generateCategorySelect('pilot-ticket-category', config.category_id)}</div>
-                    <div class="setting-row"><div class="setting-label">Staff role</div>${this.generateRoleSelect('pilot-ticket-staff', config.staff_role_id)}</div>
-                    <div class="setting-row"><div class="setting-label">Transcript channel</div>${this.generateChannelSelect('pilot-ticket-transcript', config.transcript_channel_id)}</div>
-                    <div class="setting-row"><div class="setting-label">Transcript retention (days)</div><input id="pilot-ticket-retention" class="ds-input" type="number" min="1" max="28" value="${Number(config.transcript_retention_days || 7)}"></div>
-                    <div class="setting-row"><div class="setting-label">Allow reopen</div><input id="pilot-ticket-reopen" type="checkbox" ${config.allow_reopen !== false ? 'checked' : ''}></div>
-                    <div class="setting-row" style="margin-top:16px;border-top:none;"><button class="btn-save" onclick="DS.savePublicTickets()">Save Ticket Configuration</button></div>
-                </div>`;
-            return;
-        }
-
-        if (key === 'sticky_slowmode') {
-            const config = data.pilot_slowmode_config || {};
-            container.innerHTML = `
-                <div class="setting-card"><h3><i class="fas fa-thumbtack"></i> Sticky & Slowmode</h3>
-                    <div class="setting-row"><div class="setting-label">Questions channel<br><small>This channel is always exempt from automatic slowmode.</small></div>${this.generateChannelSelect('pilot-questions-channel', data.questions_channel_id)}</div>
-                    <div class="setting-row"><div class="setting-label">Activity window (seconds)</div><input id="pilot-slowmode-window" class="ds-input" type="number" min="3" max="120" value="${Number(config.window_seconds || 10)}"></div>
-                    <p style="color:var(--text-muted);font-size:.85rem;margin-top:16px;">Set per-channel sticky content with <code>/sticky_set</code>; it is stored only for that channel and pilot guild.</p>
-                    <div class="setting-row" style="margin-top:16px;border-top:none;"><button class="btn-save" onclick="DS.savePublicSlowmode()">Save Slowmode Settings</button></div>
-                </div>`;
-            return;
-        }
-
-        if (key === 'standard_antialt') {
-            const config = data.standard_antialt || {};
-            container.innerHTML = `
-                <div class="setting-card"><h3><i class="fas fa-user-shield"></i> Standard Anti-Alt</h3>
-                    <p style="color:var(--text-muted);font-size:.85rem;margin:8px 0 16px;">Uses Discord-native account and join signals for manual review only. It never fingerprints devices and never auto-bans.</p>
-                    <div class="setting-row"><div class="setting-label">Enable review signals</div><input id="pilot-antialt-enabled" type="checkbox" ${config.enabled ? 'checked' : ''}></div>
-                    <div class="setting-row"><div class="setting-label">Verified role<br><small>Optional native membership signal</small></div>${this.generateRoleSelect('pilot-antialt-verified-role', config.verified_role_id)}</div>
-                    <div class="setting-row"><div class="setting-label">Quarantine role</div>${this.generateRoleSelect('pilot-antialt-role', config.quarantine_role_id)}</div>
-                    <div class="setting-row"><div class="setting-label">Review log channel</div>${this.generateChannelSelect('pilot-antialt-log', config.log_channel_id)}</div>
-                    <div class="setting-row" style="margin-top:16px;border-top:none;"><button class="btn-save" onclick="DS.savePublicAntiAlt()">Save Anti-Alt Settings</button></div>
-                </div>`;
-            return;
-        }
-
-        container.innerHTML = `<div class="setting-card"><h3><i class="fas fa-crosshairs"></i> Local KOS</h3><p style="color:var(--text-muted);">KOS records are local to this server. Use <code>/kos_add</code>, <code>/kos_check</code>, and <code>/spot</code>; no network KOS or cross-server reputation data exists in the pilot.</p></div>`;
-    },
-
     // ── Panel Renderers ─────────────────────────────────
 
     renderPanel: async function(key) {
+        if (!this.currentGuild || String(this.currentGuild.id) !== PRIVATE_GUILD_ID || !Object.hasOwn(COG_REGISTRY, key)) return;
         const container = document.getElementById(`content-${key}`);
         const gid = this.currentGuild.id;
 
-        if (['public_setup', 'moderation', 'tickets', 'sticky_slowmode', 'standard_antialt', 'local_kos'].includes(key)) {
-            await this.renderPublicPilotPanel(key);
-            return;
-        }
-
-        if (key === 'gankping') {
-            const data = await this.fetchAPI(`/guild/${gid}/gankping`);
-            if (!data) return;
-            
-            const isPro = data.is_pro || false;
-            
-            let myNetworksHtml = '';
-            
-            data.networks.forEach(net => {
-                let adminHtml = '';
-                if (net.is_owner) {
-                    let pendingHtml = '';
-                    if (net.pending_applicants && net.pending_applicants.length > 0) {
-                        pendingHtml = `
-                            <h4 style="margin-top:20px;margin-bottom:10px;"><i class="fas fa-user-clock"></i> Pending Applicants</h4>
-                            <div style="background:var(--bg);border-radius:6px;padding:10px;">
-                                ${net.pending_applicants.map(app => `
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
-                                        <div>
-                                            <strong>${app.guild_name}</strong> (ID: ${app.guild_id})<br>
-                                            <small style="color:var(--text-muted)">Requested by ${app.requested_by}</small>
-                                        </div>
-                                        <div>
-                                            <button class="btn-save" style="padding:4px 8px;font-size:0.8rem;" onclick="DS.adminAccept('${net.network_id}', '${app.guild_id}')">Accept</button>
-                                            <button class="btn-save" style="padding:4px 8px;font-size:0.8rem;background:var(--danger);" onclick="DS.adminReject('${net.network_id}', '${app.guild_id}')">Reject</button>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    }
-                    
-                    let membersHtml = '';
-                    let analyticsHtml = '';
-                    if (net.all_members && net.all_members.length > 0) {
-                        analyticsHtml = `
-                            <h4 style="margin-top:20px;margin-bottom:10px;"><i class="fas fa-chart-pie"></i> Detailed Gank Analytics (Pro)</h4>
-                            <div style="background:var(--bg);border-radius:6px;padding:10px;max-height:300px;overflow-y:auto; border: 1px solid ${isPro ? '#FFD700' : '#555'}; position: relative;">
-                                ${!isPro ? `<div style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.7); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10;">
-                                    <i class="fas fa-lock" style="font-size:2rem; color:#FFD700; margin-bottom:10px;"></i>
-                                    <p style="color:#fff; font-weight:bold;">Pro Plan Required</p>
-                                </div>` : ''}
-                                <table class="ds-table" style="width:100%; text-align:left; ${!isPro ? 'filter: blur(5px); user-select:none; pointer-events:none;' : ''}">
-                                    <tr><th>Guild</th><th>Attended</th><th>Missed</th><th>Response Rate</th></tr>
-                                    ${net.all_members.map((m, i) => {
-                                        if (!isPro) {
-                                            return `
-                                            <tr>
-                                                <td>Guild ${i + 1}</td>
-                                                <td style="color:#00BF7F;">??</td>
-                                                <td style="color:#E63946;">??</td>
-                                                <td style="color:#E6A23C; font-weight:bold;">??%</td>
-                                            </tr>
-                                            `;
-                                        }
-                                        const attended = m.ganks_attended || 0;
-                                        const missed = m.ganks_missed || 0;
-                                        const total = attended + missed;
-                                        const rate = total > 0 ? Math.round((attended / total) * 100) : 0;
-                                        let rateColor = rate > 50 ? '#00BF7F' : (rate > 20 ? '#E6A23C' : '#E63946');
-                                        return `
-                                            <tr>
-                                                <td>${m.guild_name}</td>
-                                                <td style="color:#00BF7F;">${attended}</td>
-                                                <td style="color:#E63946;">${missed}</td>
-                                                <td style="color:${rateColor}; font-weight:bold;">${rate}%</td>
-                                            </tr>
-                                        `;
-                                    }).join('')}
-                                </table>
-                            </div>
-                        `;
-
-                        membersHtml = `
-                            <h4 style="margin-top:20px;margin-bottom:10px;"><i class="fas fa-users"></i> Network Members</h4>
-                            <div style="background:var(--bg);border-radius:6px;padding:10px;max-height:200px;overflow-y:auto;">
-                                ${net.all_members.map(m => `
-                                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
-                                        <div>
-                                            <strong>${m.guild_name}</strong> (ID: ${m.guild_id})
-                                        </div>
-                                            <div>
-                                                ${m.is_owner ? '<span class="net-badge" style="background:var(--primary);color:#000;">Owner</span>' : `<button class="btn-save" style="padding:4px 8px;font-size:0.8rem;background:var(--danger);" onclick="DS.adminKick('${net.network_id}', '${m.guild_id}')">Kick</button>`}
-                                            </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        `;
-                    } else {
-                        membersHtml = `<p style="color:var(--text-muted);font-size:0.85rem;margin-top:10px;">No other members in this network yet.</p>`;
-                    }
-
-                    adminHtml = `
-                    <div class="setting-card" style="margin-top:16px;border:1px solid var(--primary);">
-                        <h3 style="color:var(--primary);"><i class="fas fa-crown"></i> Network Administration</h3>
-                        
-                        <div class="split-columns">
-                            <div class="split-col">
-                                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                    <div class="setting-label">Network Name</div>
-                                    <input type="text" id="admin-name-${net.network_id}" class="ds-input" style="width:100%" value="${net.name}">
-                                </div>
-                                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                    <div class="setting-label">Icon URL</div>
-                                    <input type="text" id="admin-icon-${net.network_id}" class="ds-input" style="width:100%" value="${net.icon_url || ''}">
-                                </div>
-                                <div class="setting-row">
-                                    <div class="setting-label">Requires Approval<br><small>Manually approve joins</small></div>
-                                    <div class="toggle ${net.requires_approval ? 'active' : ''}" id="admin-req-${net.network_id}" onclick="this.classList.toggle('active')"></div>
-                                </div>
-                            </div>
-                            <div class="split-col">
-                                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                    <div class="setting-label">Description</div>
-                                    <textarea id="admin-desc-${net.network_id}" class="ds-input" style="width:100%;height:80px;resize:vertical;">${net.description || ''}</textarea>
-                                </div>
-                                <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                    <div class="setting-label">Max Members</div>
-                                    <input type="number" id="admin-max-${net.network_id}" class="ds-input" style="width:100%" value="${net.max_members}" min="2">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="setting-row" style="margin-top:10px;border-top:none;">
-                            <button class="btn-save" onclick="DS.adminEditNetwork('${net.network_id}')">Save Network Details</button>
-                        </div>
-
-                        ${pendingHtml}
-                        ${analyticsHtml}
-                        ${membersHtml}
-                    </div>
-                    `;
-                }
-
-                if (net.is_member) {
-                    const isEnabled = net.member ? net.member.enabled : false;
-                    const autoNotify = net.member ? net.member.auto_notify : false;
-                    
-                    myNetworksHtml += `
-                    <div class="network-card">
-                        <div class="net-header">
-                            ${net.icon_url ? `<img src="${net.icon_url}" class="net-icon">` : ''}
-                            <div>
-                                <div class="net-name">${net.name} ${net.is_owner ? '<span class="net-badge" style="background:var(--primary);color:#000;">Owner</span>' : ''}</div>
-                                <div class="net-id">Network ID: ${net.network_id} • ${net.member_count}/${net.max_members} guilds</div>
-                            </div>
-                        </div>
-                        
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-value">${net.stats.total_ganks}</div>
-                                <div class="stat-label">Total Ganks</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">${net.stats.coming_responses}</div>
-                                <div class="stat-label">Assists</div>
-                            </div>
-                        </div>
-                        
-                        <div class="setting-card" style="margin-top:16px;">
-                            <h3><i class="fas fa-sliders"></i> Notification Setup</h3>
-                            <div class="split-columns">
-                                <div class="split-col">
-                                    <div class="setting-row">
-                                        <div class="setting-label">Enable Notifications<br><small>Receive pings from this network</small></div>
-                                        <div class="toggle ${isEnabled ? 'active' : ''}" id="gp-toggle-${net.network_id}" onclick="this.classList.toggle('active')"></div>
-                                    </div>
-                                    <div class="setting-row">
-                                        <div class="setting-label">Auto Notify<br><small>Skip manual confirmation</small></div>
-                                        <div class="toggle ${autoNotify ? 'active' : ''}" id="gp-auto-${net.network_id}" onclick="this.classList.toggle('active')"></div>
-                                    </div>
-                                </div>
-                                <div class="split-col">
-                                    <div class="setting-row">
-                                        <div class="setting-label">Target Channel<br><small>Where to post incoming pings</small></div>
-                                        ${this.generateChannelSelect(`gp-ch-${net.network_id}`, net.member.channel_id)}
-                                    </div>
-                                    <div class="setting-row">
-                                        <div class="setting-label">Ping Role<br><small>Role to mention on new ganks</small></div>
-                                        ${this.generateRoleSelect(`gp-role-${net.network_id}`, net.member.ping_role_id)}
-                                    </div>
-                                    <div class="setting-row">
-                                        <div class="setting-label">Ally Role (Optional)<br><small>Role for recognized allies</small></div>
-                                        ${this.generateRoleSelect(`gp-ally-${net.network_id}`, net.member.ally_role_id)}
-                                    </div>
-                                </div>
-                            <div class="setting-row" style="margin-top:20px;border-top:none;">
-                                <button class="btn-save" onclick="DS.saveGankPing('${net.network_id}')">Save Notification Setup</button>
-                            </div>
-                            </div>
-
-                            <div class="setting-card" style="margin-top:16px; border:1px solid ${isPro ? '#FFD700' : '#555'}; position: relative; overflow: hidden;">
-                            ${!isPro ? `<div style="position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(15, 20, 25, 0.95); backdrop-filter: blur(4px); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:10;">
-                                <i class="fas fa-lock" style="font-size:2.5rem; color:#FFD700; margin-bottom:15px;"></i>
-                                <h3 style="color:#fff; margin-bottom:5px;">Pro Plan Required</h3>
-                                <p style="color:var(--text-muted); font-size: 0.85rem; margin-bottom:15px; text-align:center; max-width: 80%;">Unlock Custom Webhook Avatars and Names for a <b>$5 lifetime</b> plan!</p>
-                                <div style="display:flex; gap:10px;">
-                                <span class="btn-save" style="background:#555;opacity:.9;padding:8px 16px;cursor:default;"><i class="fas fa-flask"></i> Pilot Pro billing is not enabled yet</span>
-                                </div>
-                            </div>` : ''}
-                            <h3 style="color:#FFD700;"><i class="fas fa-palette"></i> Custom Branding</h3>
-                            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Make the bot look like it belongs to your server when it sends a ping in your channels.</p>
-
-                            <div class="setting-row">
-                                <div class="setting-label">Enable Custom Branding<br><small>Uses webhooks to change bot appearance</small></div>
-                                <div class="toggle ${net.member?.use_custom_branding ? 'active' : ''}" id="gp-brand-toggle-${net.network_id}" onclick="if(${isPro}) this.classList.toggle('active')"></div>
-                            </div>
-                            <div class="split-columns">
-                                <div class="split-col">
-                                    <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                        <div class="setting-label">Custom Bot Name</div>
-                                        <input type="text" id="gp-brand-name-${net.network_id}" class="ds-input" style="width:100%" placeholder="Leave empty for Server Name" value="${net.member?.custom_bot_name || ''}">
-                                    </div>
-                                </div>
-                                <div class="split-col">
-                                    <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                        <div class="setting-label">Custom Avatar URL</div>
-                                        <input type="text" id="gp-brand-avatar-${net.network_id}" class="ds-input" style="width:100%" placeholder="Leave empty for Server Icon" value="${net.member?.custom_bot_avatar || ''}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="split-columns">
-                                <div class="split-col">
-                                    <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                        <div class="setting-label">Embed Title</div>
-                                        <input type="text" id="gp-embed-title-${net.network_id}" class="ds-input" style="width:100%" placeholder="Leave empty for GANK ALERT" value="${net.member?.custom_embed_title || ''}">
-                                    </div>
-                                    <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                        <div class="setting-label">Embed Accent Color</div>
-                                        <input type="text" id="gp-embed-color-${net.network_id}" class="ds-input" style="width:100%" placeholder="#E63946" value="${net.member?.custom_embed_color || ''}">
-                                    </div>
-                                </div>
-                                <div class="split-col">
-                                    <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                                        <div class="setting-label">Embed Thumbnail URL</div>
-                                        <input type="text" id="gp-embed-thumb-${net.network_id}" class="ds-input" style="width:100%" placeholder="Leave empty for Network Icon" value="${net.member?.custom_embed_thumbnail || ''}">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="setting-row" style="margin-top:20px;border-top:none;">
-                                <button class="btn-save" onclick="DS.saveGankPing('${net.network_id}')">Save Branding Options</button>
-                            </div>
-                            </div>
-
-                            ${adminHtml}
-                    </div>`;
-                } else if (net.is_pending) {
-                    myNetworksHtml += `
-                    <div class="network-card" style="opacity: 0.8;">
-                        <div class="net-header" style="margin-bottom:0;">
-                            ${net.icon_url ? `<img src="${net.icon_url}" class="net-icon">` : ''}
-                            <div>
-                                <div class="net-name">${net.name} <span class="net-badge" style="background:#555;color:#fff;">Pending Approval</span></div>
-                                <div class="net-id">ID: ${net.network_id}</div>
-                            </div>
-                        </div>
-                    </div>`;
-                }
-            });
-            
-            if (!myNetworksHtml) myNetworksHtml = `<p style="color:var(--text-muted);margin-bottom:20px;">This server is not a part of any gank networks yet.</p>`;
-
-            container.innerHTML = `
-                <div style="margin-bottom:40px;">
-                    <h3><i class="fas fa-network-wired"></i> My Networks</h3>
-                    <div style="margin-top:16px;">${myNetworksHtml}</div>
-                </div>
-
-                <div class="split-columns" style="margin-top:40px; align-items: stretch;">
-                    <div class="setting-card split-col" style="margin-top:0;">
-                        <h3><i class="fas fa-sign-in-alt"></i> Join Network</h3>
-                        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Enter the private ID of a network to send a join request.</p>
-                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                            <div class="setting-label">Network ID</div>
-                            <input type="text" id="gp-join-id" class="ds-input" style="width:100%" placeholder="network-id-here">
-                        </div>
-                        <div class="setting-row" style="margin-top:20px;border-top:none;">
-                            <button class="btn-save" onclick="DS.joinNetworkById()">Join Network</button>
-                        </div>
-                    </div>
-
-                    <div class="setting-card split-col" style="margin-top:0;">
-                        <h3><i class="fas fa-plus-circle"></i> Create Network</h3>
-                        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Create a new gankping network to manage your own coalition.</p>
-                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                            <div class="setting-label">Network ID (3-32 chars)</div>
-                            <input type="text" id="gp-create-id" class="ds-input" style="width:100%" placeholder="e.g. my-awesome-guild">
-                        </div>
-                        <div class="setting-row" style="flex-direction:column; align-items:flex-start; gap:8px;">
-                            <div class="setting-label">Display Name</div>
-                            <input type="text" id="gp-create-name" class="ds-input" style="width:100%" placeholder="e.g. Awesome Guild Pings">
-                        </div>
-                        <div class="setting-row" style="margin-top:20px;border-top:none;">
-                            <button class="btn-save" onclick="DS.createNetwork()">Create Network</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        else if (key === 'antialt') {
+        if (key === 'antialt') {
             const data = await this.fetchAPI(`/guild/${gid}/antialt`);
             if (!data) return;
             const s = data.settings;
@@ -1029,31 +581,6 @@ const DS = {
             `;
         }
         else if (key === 'faq') {
-            if (String(gid) !== PRIVATE_GUILD_ID) {
-                const data = await this.fetchAPI(`/guild/${gid}/public-config`);
-                if (!data) return;
-                window.removePilotFaqRow = function(btn) { btn.closest('.faq-row').remove(); };
-                window.addPilotFaqRow = (question = '', answer = '') => {
-                    const rows = document.getElementById('pilot-faq-container');
-                    const row = document.createElement('div');
-                    row.className = 'faq-row';
-                    row.style.cssText = 'display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;';
-                    row.innerHTML = `<input type="text" class="ds-input pilot-faq-q" placeholder="Question or alias" value="${this.escapeHtml(question)}" style="flex:1;"><textarea class="ds-input pilot-faq-a" placeholder="Reviewed answer" style="flex:2;height:48px;resize:vertical;">${this.escapeHtml(answer)}</textarea><button class="btn-save" style="background:var(--danger);padding:10px;" onclick="removePilotFaqRow(this)"><i class="fas fa-trash"></i></button>`;
-                    rows.appendChild(row);
-                };
-                container.innerHTML = `
-                    <div class="setting-card"><h3><i class="fas fa-circle-question"></i> Pilot FAQ</h3>
-                        <p style="font-size:.85rem;color:var(--text-muted);margin:8px 0 16px;">Entries are normalized for aliases and common question variants. AI drafts are explicit staff-only Discord actions; this dashboard never sends FAQ text to AI.</p>
-                        <div class="setting-row"><div class="setting-label">Questions channel<br><small>FAQ replies are scoped here and automatic slowmode is exempt.</small></div>${this.generateChannelSelect('pilot-faq-questions-channel', data.questions_channel_id)}</div>
-                        <div id="pilot-faq-container" style="margin:16px 0;"></div>
-                        <button class="btn-save" style="background:#555;margin-bottom:16px;" onclick="addPilotFaqRow()">+ Add FAQ Entry</button>
-                        <div class="setting-row" style="border-top:none;"><button class="btn-save" onclick="DS.savePublicFaq()">Save Pilot FAQ</button></div>
-                    </div>`;
-                const entries = data.faq_entries || {};
-                Object.entries(entries).forEach(([question, answer]) => window.addPilotFaqRow(question, answer));
-                if (Object.keys(entries).length === 0) window.addPilotFaqRow();
-                return;
-            }
             const data = await this.fetchAPI(`/guild/${gid}/faq`);
             if (!data) return;
             
@@ -1273,262 +800,6 @@ const DS = {
     },
 
     // ── Save Actions ────────────────────────────────────
-
-    savePublicSettings: async function(settings) {
-        const gid = this.currentGuild.id;
-        const result = await this.fetchAPI(`/guild/${gid}/public-config`, 'POST', { settings });
-        if (result && result.ok) this.toast("Pilot settings saved");
-        return result;
-    },
-
-    savePublicSetup: async function() {
-        const customAccent = document.getElementById('pilot-setup-accent');
-        await this.savePublicSettings({
-            guided_setup: {
-                pack: document.getElementById('pilot-setup-pack').value,
-                theme: document.getElementById('pilot-setup-theme').value,
-                ...(customAccent && !customAccent.disabled ? { custom_accent: customAccent.value } : {}),
-            },
-            theme: {
-                name: document.getElementById('pilot-setup-theme').value,
-                ...(customAccent && !customAccent.disabled ? { custom_accent: customAccent.value } : {}),
-            },
-        });
-    },
-
-    publicSetupSelection: function() {
-        const customAccent = document.getElementById('pilot-setup-accent');
-        return {
-            pack: document.getElementById('pilot-setup-pack').value,
-            theme: document.getElementById('pilot-setup-theme').value,
-            ...(customAccent && !customAccent.disabled ? { custom_accent: customAccent.value } : {}),
-        };
-    },
-
-    previewPublicSetup: async function() {
-        const gid = this.currentGuild.id;
-        const query = new URLSearchParams(this.publicSetupSelection());
-        const result = await this.fetchAPI(`/guild/${gid}/public-setup/preview?${query.toString()}`);
-        if (!result) return;
-        const summary = document.getElementById('pilot-setup-preview');
-        const channels = (result.missing_channels || []).map(item => `#${this.escapeHtml(item.name)} in ${this.escapeHtml(item.category)}`).join(', ') || 'None';
-        summary.style.display = 'block';
-        summary.innerHTML = `<strong>Preview:</strong> roles: ${this.escapeHtml((result.missing_roles || []).join(', ') || 'None')}<br>categories: ${this.escapeHtml((result.missing_categories || []).join(', ') || 'None')}<br>bot permissions: ${this.escapeHtml((result.missing_permissions || []).join(', ') || 'None')}<br>channels: ${channels}`;
-    },
-
-    applyPublicSetup: async function() {
-        if (!confirm('Apply this additive setup? Only resources reported as missing will be created.')) return;
-        const gid = this.currentGuild.id;
-        const result = await this.fetchAPI(`/guild/${gid}/public-setup/apply`, 'POST', {
-            ...this.publicSetupSelection(), confirm: true,
-        });
-        if (result && result.ok) {
-            this.toast(result.created && result.created.length ? `Setup applied: ${result.created.join(', ')}` : 'Setup applied; no resources were missing.');
-            this.renderPanel('public_setup');
-        }
-    },
-
-    savePublicModeration: async function() {
-        const csv = id => document.getElementById(id).value.split(',').map(value => value.trim()).filter(Boolean);
-        const terms = document.getElementById('automod-terms').value.split('\n').map(term => term.trim()).filter(Boolean);
-        const actions = Array.from(document.querySelectorAll('.automod-action:checked')).map(input => input.value);
-        if (!actions.length) { this.toast('Choose at least one safe AutoMod action.'); return; }
-        await this.savePublicSettings({ automod_config: {
-            blocked_terms: terms,
-            max_mentions: Number(document.getElementById('automod-mentions').value || 0),
-            block_invites: document.getElementById('automod-invites').checked,
-            block_links: document.getElementById('automod-links').checked,
-            max_attachments: Number(document.getElementById('automod-attachments')?.value || 0),
-            max_caps_percent: Number(document.getElementById('automod-caps').value || 0),
-            max_emojis: Number(document.getElementById('automod-emojis')?.value || 0),
-            duplicate_limit: Number(document.getElementById('automod-duplicates').value || 0),
-            rate_limit: Number(document.getElementById('automod-rate').value || 0),
-            actions,
-            native_enabled: document.getElementById('automod-native-enabled').checked,
-            timeout_seconds: Number(document.getElementById('automod-timeout').value || 300),
-            quarantine_role_id: document.getElementById('automod-quarantine-role').value || null,
-            staff_alert_channel_id: document.getElementById('automod-staff-alert').value || null,
-        }, logging_config: {
-            ignored_user_ids: csv('logging-ignore-users'),
-            ignored_role_ids: csv('logging-ignore-roles'),
-            ignored_bot_ids: csv('logging-ignore-bots'),
-            ignored_channel_ids: csv('logging-ignore-channels'),
-            ignored_event_families: csv('logging-ignore-events'),
-        }});
-    },
-
-    syncNativeAutoMod: async function() {
-        const gid = this.currentGuild.id;
-        const enabled = document.getElementById('automod-native-enabled').checked;
-        const result = await this.fetchAPI(`/guild/${gid}/public-automod/native-sync`, 'POST', { confirm: true, enabled });
-        if (result && result.ok) this.toast(`Native AutoMod synced: ${(result.rules || []).length} active rule(s).`);
-    },
-
-    savePublicTickets: async function() {
-        let formFields;
-        try {
-            formFields = document.getElementById('pilot-ticket-form-fields').value.split('\n').map(line => line.trim()).filter(Boolean).map((line, index) => {
-                const [key, label, style = 'short', required = 'required', maxLength = '1000', placeholder = ''] = line.split('|');
-                if (!key || !label || !['short', 'paragraph'].includes(style) || !['required', 'optional'].includes(required)) throw new Error(`Invalid ticket form field on line ${index + 1}`);
-                return { key: key.trim(), label: label.trim(), style, required: required === 'required', max_length: Number(maxLength) || 1000, placeholder: placeholder.trim() };
-            });
-        } catch (error) {
-            this.toast(error.message || 'Invalid ticket form field configuration.');
-            return;
-        }
-        if (!formFields.length || formFields.length > 5) { this.toast('Ticket forms require between 1 and 5 fields.'); return; }
-        await this.savePublicSettings({ ticket_config: {
-            category_id: document.getElementById('pilot-ticket-category').value || null,
-            staff_role_id: document.getElementById('pilot-ticket-staff').value || null,
-            transcript_channel_id: document.getElementById('pilot-ticket-transcript').value || null,
-            transcript_retention_days: Number(document.getElementById('pilot-ticket-retention').value || 7),
-            allow_reopen: document.getElementById('pilot-ticket-reopen').checked,
-            form_title: document.getElementById('pilot-ticket-form-title').value.trim(),
-            form_description: document.getElementById('pilot-ticket-form-description').value.trim(),
-            form_fields: formFields,
-        }});
-    },
-
-    savePublicSlowmode: async function() {
-        await this.savePublicSettings({
-            questions_channel_id: document.getElementById('pilot-questions-channel').value || null,
-            pilot_slowmode_config: {
-                window_seconds: Number(document.getElementById('pilot-slowmode-window').value || 10),
-                thresholds: [{ messages: 15, slowmode: 15 }, { messages: 8, slowmode: 10 }, { messages: 4, slowmode: 5 }],
-            },
-        });
-    },
-
-    savePublicAntiAlt: async function() {
-        await this.savePublicSettings({ standard_antialt: {
-            enabled: document.getElementById('pilot-antialt-enabled').checked,
-            verified_role_id: document.getElementById('pilot-antialt-verified-role').value || null,
-            quarantine_role_id: document.getElementById('pilot-antialt-role').value || null,
-            log_channel_id: document.getElementById('pilot-antialt-log').value || null,
-        }});
-    },
-
-    savePublicFaq: async function() {
-        const entries = {};
-        document.querySelectorAll('.faq-row').forEach(row => {
-            const question = row.querySelector('.pilot-faq-q').value.trim();
-            const answer = row.querySelector('.pilot-faq-a').value.trim();
-            if (question && answer) entries[question] = answer;
-        });
-        await this.savePublicSettings({
-            faq_entries: entries,
-            questions_channel_id: document.getElementById('pilot-faq-questions-channel').value || null,
-        });
-    },
-
-    saveGankPing: async function(netId) {
-        const gid = this.currentGuild.id;
-        const body = {
-            network_id: netId,
-            enabled: document.getElementById(`gp-toggle-${netId}`).classList.contains('active'),
-            auto_notify: document.getElementById(`gp-auto-${netId}`).classList.contains('active'),
-            channel_id: document.getElementById(`gp-ch-${netId}`).value || null,
-            ping_role_id: document.getElementById(`gp-role-${netId}`).value || null,
-            ally_role_id: document.getElementById(`gp-ally-${netId}`).value || null
-        };
-        
-        const brandToggle = document.getElementById(`gp-brand-toggle-${netId}`);
-        if (brandToggle) {
-            body.use_custom_branding = brandToggle.classList.contains('active');
-            const brandName = document.getElementById(`gp-brand-name-${netId}`);
-            if (brandName) body.custom_bot_name = brandName.value;
-            const brandAvatar = document.getElementById(`gp-brand-avatar-${netId}`);
-            if (brandAvatar) body.custom_bot_avatar = brandAvatar.value;
-            const embedTitle = document.getElementById(`gp-embed-title-${netId}`);
-            if (embedTitle) body.custom_embed_title = embedTitle.value;
-            const embedColor = document.getElementById(`gp-embed-color-${netId}`);
-            if (embedColor) body.custom_embed_color = embedColor.value;
-            const embedThumb = document.getElementById(`gp-embed-thumb-${netId}`);
-            if (embedThumb) body.custom_embed_thumbnail = embedThumb.value;
-        }
-
-        const res = await this.fetchAPI(`/guild/${gid}/gankping`, 'POST', body);
-        if (res && res.ok) this.toast("GankPing settings saved");
-    },
-    
-    joinNetworkById: async function() {
-        const netId = document.getElementById('gp-join-id').value.trim();
-        if (!netId) return this.toast("Please enter a Network ID", "error");
-        
-        if (!confirm(`Request to join network ${netId}?`)) return;
-        const gid = this.currentGuild.id;
-        const res = await this.fetchAPI(`/guild/${gid}/gankping/join`, 'POST', { network_id: netId });
-        if (res && res.ok) {
-            this.toast(res.status === 'pending' ? "Join request sent (pending approval)" : "Successfully joined network!");
-            this.renderPanel('gankping');
-        }
-    },
-    
-    createNetwork: async function() {
-        const gid = this.currentGuild.id;
-        const netId = document.getElementById('gp-create-id').value.trim();
-        const name = document.getElementById('gp-create-name').value.trim();
-        
-        if (!netId || !name) {
-            this.toast("Network ID and Name are required", "error");
-            return;
-        }
-        
-        const res = await this.fetchAPI(`/guild/${gid}/gankping/create`, 'POST', {
-            network_id: netId,
-            name: name
-        });
-        if (res && res.ok) {
-            this.toast("Network created successfully!");
-            this.renderPanel('gankping');
-        }
-    },
-
-    adminEditNetwork: async function(netId) {
-        const gid = this.currentGuild.id;
-        const body = {
-            network_id: netId,
-            action: 'edit_network',
-            name: document.getElementById(`admin-name-${netId}`).value.trim(),
-            description: document.getElementById(`admin-desc-${netId}`).value.trim(),
-            icon_url: document.getElementById(`admin-icon-${netId}`).value.trim(),
-            requires_approval: document.getElementById(`admin-req-${netId}`).classList.contains('active'),
-            max_members: document.getElementById(`admin-max-${netId}`).value
-        };
-        const res = await this.fetchAPI(`/guild/${gid}/gankping/admin`, 'POST', body);
-        if (res && res.ok) {
-            this.toast("Network details saved!");
-            this.renderPanel('gankping');
-        }
-    },
-
-    adminAccept: async function(netId, targetGid) {
-        const gid = this.currentGuild.id;
-        const res = await this.fetchAPI(`/guild/${gid}/gankping/admin`, 'POST', { network_id: netId, action: 'accept_applicant', target_gid: targetGid });
-        if (res && res.ok) {
-            this.toast("Applicant accepted");
-            this.renderPanel('gankping');
-        }
-    },
-
-    adminReject: async function(netId, targetGid) {
-        const gid = this.currentGuild.id;
-        const res = await this.fetchAPI(`/guild/${gid}/gankping/admin`, 'POST', { network_id: netId, action: 'reject_applicant', target_gid: targetGid });
-        if (res && res.ok) {
-            this.toast("Applicant rejected");
-            this.renderPanel('gankping');
-        }
-    },
-
-    adminKick: async function(netId, targetGid) {
-        if (!confirm("Are you sure you want to kick this guild from the network?")) return;
-        const gid = this.currentGuild.id;
-        const res = await this.fetchAPI(`/guild/${gid}/gankping/admin`, 'POST', { network_id: netId, action: 'kick_member', target_gid: targetGid });
-        if (res && res.ok) {
-            this.toast("Member kicked from network");
-            this.renderPanel('gankping');
-        }
-    },
 
     saveAntiAlt: async function() {
         const gid = this.currentGuild.id;
